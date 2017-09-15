@@ -27,14 +27,22 @@ const padStart = (
 };
 
 /* ::
+type ArithmeticType = 'standard' | 'carry-less';
+
 type AddDetailProps = {
   a: number,
   b: number,
   sum: number,
+  arithmeticType: ArithmeticType,
 };
 */
 
-const AddDetail = ({ a, b, sum } /* : AddDetailProps */) => {
+// flowlint-next-line unclear-type:off
+const impossible = (value /* : empty */) /* : any */ => {
+  throw new Error(`Impossible case encountered: ${value}`);
+};
+
+const AddDetail = ({ a, b, sum, arithmeticType } /* : AddDetailProps */) => {
   const aDec = a.toString(10);
   const bDec = b.toString(10);
 
@@ -48,15 +56,31 @@ const AddDetail = ({ a, b, sum } /* : AddDetailProps */) => {
   const bDecPadded = padStart(bDec, decPadLength, ' ');
   const decSpacer = ' '.repeat(decPadLength);
 
-  const binPadLength = Math.max(aBin.length, bBin.length, sumBin.length);
+  // Always account for the carry bit.
+  const binPadLength = Math.max(aBin.length, bBin.length) + 1;
+  if (sumBin.length < binPadLength - 1 || sumBin.length > binPadLength) {
+    throw new Error(`Unexpected sum ${sumBin} for ${aBin} and ${bBin}`);
+  }
 
   const aBinPadded = padStart(aBin, binPadLength, ' ');
   const bBinPadded = padStart(bBin, binPadLength, ' ');
   const sumBinPadded = padStart(sumBin, binPadLength, ' ');
   const binDivider = '-'.repeat(binPadLength);
 
+  let op;
+  switch (arithmeticType) {
+    case 'standard':
+      op = '+';
+      break;
+    case 'carry-less':
+      op = '^';
+      break;
+    default:
+      op = impossible(arithmeticType);
+  }
+
   const output = `  a = ${aDecPadded} = ${aBinPadded}b
-^ b = ${bDecPadded} = ${bBinPadded}b
+${op} b = ${bDecPadded} = ${bBinPadded}b
       ${decSpacer}   ${binDivider}-
       ${decSpacer}   ${sumBinPadded}b`;
 
@@ -95,7 +119,7 @@ const strictParseInt = (
   return n;
 };
 
-const parseInt32 = (name /* : string */, s /* : string */) /* : number */ => {
+const parseInt31 = (name /* : string */, s /* : string */) /* : number */ => {
   const n = strictParseInt(name, s);
 
   const nameVar = preact.h('var', null, name);
@@ -104,8 +128,8 @@ const parseInt32 = (name /* : string */, s /* : string */) /* : number */ => {
     throw new VChildError([nameVar, ' cannot be negative.']);
   }
 
-  const maxInt32 = ~0 >>> 0;
-  if (n > maxInt32) {
+  const maxInt31 = ~0 >>> 1;
+  if (n > maxInt31) {
     throw new VChildError([nameVar, ' is too big.']);
   }
 
@@ -119,13 +143,15 @@ const getTargetInput = (e /* : Event */) /* : HTMLInputElement */ => {
   return e.target;
 };
 
-const spanNoWrap = (...children) =>
-  preact.h('span', { style: { whiteSpace: 'nowrap' } }, ...children);
+const styleNoWrap = { style: { whiteSpace: 'nowrap' } };
+
+const spanNoWrap = (...children) => preact.h('span', styleNoWrap, ...children);
 
 /* ::
 type AddDemoState = {
   a: string,
   b: string,
+  arithmeticType: ArithmeticType,
 };
 */
 
@@ -136,18 +162,32 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
   ) {
     super({});
     // Workaround for https://github.com/prettier/prettier/issues/719 .
-    const state /* : AddDemoState */ = { a, b };
+    const state /* : AddDemoState */ = { a, b, arithmeticType: 'carry-less' };
     this.state = state;
   }
 
   onAChange(a /* : string */) {
     // Should be { ...state, a }, but that is unsupported by Safari.
-    this.setState(state => ({ a, b: state.b }));
+    this.setState(state => ({
+      a,
+      b: state.b,
+      arithmeticType: state.arithmeticType,
+    }));
   }
 
   onBChange(b /* : string */) {
     // Should be { ...state, b }, but that is unsupported by Safari.
-    this.setState(state => ({ a: state.a, b }));
+    this.setState(state => ({
+      a: state.a,
+      b,
+      arithmeticType: state.arithmeticType,
+    }));
+  }
+
+  onArithmeticTypeChange(arithmeticType /* : ArithmeticType */) {
+    // Should be { ...state, arithmeticType }, but that is unsupported
+    // by Safari.
+    this.setState(state => ({ a: state.a, b: state.b, arithmeticType }));
   }
 
   render(props /* : {} */, state /* : AddDemoState */) {
@@ -155,16 +195,52 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
 
     let children;
     try {
-      const a = parseInt32('a', state.a);
-      const b = parseInt32('b', state.b);
-      const sum = carrylessAdd(a, b);
+      const a = parseInt31('a', state.a);
+      const b = parseInt31('b', state.b);
+
+      const choiceGroupName = 'carrylessAddDemoArithmeticTypeChoice';
+      const choiceRadio = (
+        arithmeticType /* : ArithmeticType */,
+        trailer /* : string */
+      ) =>
+        h(
+          'label',
+          styleNoWrap,
+          h('input', {
+            checked: state.arithmeticType === arithmeticType,
+            name: choiceGroupName,
+            type: 'radio',
+            onChange: () => this.onArithmeticTypeChange(arithmeticType),
+          }),
+          ` ${arithmeticType} arithmetic${trailer}`
+        );
+
+      let sum;
+      let op;
+      switch (state.arithmeticType) {
+        case 'standard':
+          sum = (a + b) >>> 0;
+          op = '+';
+          break;
+        case 'carry-less':
+          sum = carrylessAdd(a, b);
+          op = '⊕';
+          break;
+        default:
+          [sum, op] = impossible(state.arithmeticType);
+      }
+
       children = [
-        'Then ',
-        h(AddDetail, { a, b, sum }),
+        'Then, with ',
+        choiceRadio('standard', ''),
+        ' ',
+        choiceRadio('carry-less', ','),
+        ' ',
+        h(AddDetail, { a, b, sum, arithmeticType: state.arithmeticType }),
         ' so ',
         spanNoWrap(
           h('var', null, 'a'),
-          ' ⊕ ',
+          ` ${op} `,
           h('var', null, 'b'),
           ` = ${sum.toString(2)}`,
           h('sub', null, 'b'),
