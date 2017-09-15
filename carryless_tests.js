@@ -1,3 +1,7 @@
+/* eslint-env jasmine */
+
+/* global carrylessAdd */
+
 'use strict';
 
 describe('carryless', () => {
