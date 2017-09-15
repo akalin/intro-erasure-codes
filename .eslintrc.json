@@ -1,11 +1,15 @@
 {
   "extends": [
-    "airbnb"
+    "airbnb",
+    "prettier"
   ],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "script"
   },
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
     "strict": ["error", "global"],
     "comma-dangle": ["error", {
@@ -16,6 +20,12 @@
       // Disallow dangling commas in function declarations/calls,
       // since Edge doesn't support it.
       "functions": "never"
+    }],
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      // Should be "all", but Microsoft Edge doesn't support dangling
+      // commas in function arguments yet.
+      "trailingComma": "es5"
     }]
   }
 }
