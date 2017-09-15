@@ -2,6 +2,8 @@
 
 /* eslint-env browser */
 
+/* eslint no-bitwise: off */
+
 'use strict';
 
 /* :: import { carrylessAdd } from './carryless'; */
@@ -61,6 +63,55 @@ const AddDetail = ({ a, b, sum } /* : AddDetailProps */) => {
   return preact.h('pre', null, output);
 };
 
+class VChildError extends Error {
+  /* ::
+  children: VChild[];
+  */
+
+  // flowlint-next-line unclear-type:off
+  constructor(children /* : VChild[] */, ...params /* : any[] */) {
+    super(...params);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, VChildError);
+    }
+    this.children = children;
+  }
+}
+
+const strictParseInt = (
+  name /* : string */,
+  s /* : string */
+) /* : number */ => {
+  if (!/^[+-]?[0-9]+$/.test(s)) {
+    const nameVar = preact.h('var', null, name);
+    throw new VChildError([nameVar, ' is not a valid number.']);
+  }
+
+  const n = parseInt(s, 10);
+  if (Number.isNaN(n)) {
+    throw new Error('Unexpected NaN');
+  }
+
+  return n;
+};
+
+const parseInt32 = (name /* : string */, s /* : string */) /* : number */ => {
+  const n = strictParseInt(name, s);
+
+  const nameVar = preact.h('var', null, name);
+
+  if (n < 0) {
+    throw new VChildError([nameVar, ' cannot be negative.']);
+  }
+
+  const maxInt32 = ~0 >>> 0;
+  if (n > maxInt32) {
+    throw new VChildError([nameVar, ' is too big.']);
+  }
+
+  return n;
+};
+
 const getTargetInput = (e /* : Event */) /* : HTMLInputElement */ => {
   if (!(e.target instanceof HTMLInputElement)) {
     throw new Error('e.target unexpectedly not an HTMLInputElement');
@@ -73,15 +124,15 @@ const spanNoWrap = (...children) =>
 
 /* ::
 type AddDemoState = {
-  a: number,
-  b: number,
+  a: string,
+  b: string,
 };
 */
 
 // eslint-disable-next-line no-unused-vars
 class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
   constructor(
-    { initialA: a, initialB: b } /* : { initialA: number, initialB: number } */
+    { initialA: a, initialB: b } /* : { initialA: string, initialB: string } */
   ) {
     super({});
     // Workaround for https://github.com/prettier/prettier/issues/719 .
@@ -89,64 +140,77 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
     this.state = state;
   }
 
-  onAChange(a /* : number */) {
+  onAChange(a /* : string */) {
     // Should be { ...state, a }, but that is unsupported by Safari.
     this.setState(state => ({ a, b: state.b }));
   }
 
-  onBChange(b /* : number */) {
+  onBChange(b /* : string */) {
     // Should be { ...state, b }, but that is unsupported by Safari.
     this.setState(state => ({ a: state.a, b }));
   }
 
-  render(props /* : {} */, { a, b } /* : AddDemoState */) {
+  render(props /* : {} */, state /* : AddDemoState */) {
     const { h } = preact;
 
-    // TODO: Sanity-check a and b.
-    const sum = carrylessAdd(a, b);
-    const aVar = h('var', null, 'a');
-    const bVar = h('var', null, 'b');
+    let children;
+    try {
+      const a = parseInt32('a', state.a);
+      const b = parseInt32('b', state.b);
+      const sum = carrylessAdd(a, b);
+      children = [
+        'Then ',
+        h(AddDetail, { a, b, sum }),
+        ' so ',
+        spanNoWrap(
+          h('var', null, 'a'),
+          ' ⊕ ',
+          h('var', null, 'b'),
+          ` = ${sum.toString(2)}`,
+          h('sub', null, 'b'),
+          ` = ${sum.toString(10)}.`
+        ),
+      ];
+    } catch (e) {
+      if (!(e instanceof VChildError)) {
+        throw e;
+      }
+
+      ({ children } = e);
+    }
+
     return h(
       'div',
       null,
       'Let ',
       spanNoWrap(
-        aVar,
+        h('var', null, 'a'),
         ' = ',
         h('input', {
           type: 'text',
-          value: a.toString(10),
+          value: state.a,
           onInput: (e /* : Event */) => {
             const input = getTargetInput(e);
-            return this.onAChange(parseInt(input.value, 10));
+            return this.onAChange(input.value);
           },
         })
       ),
       ' and ',
       spanNoWrap(
-        bVar,
+        h('var', null, 'b'),
         ' = ',
         h('input', {
           type: 'text',
-          value: b.toString(10),
+          value: state.b,
           onInput: (e /* : Event */) => {
             const input = getTargetInput(e);
-            return this.onBChange(parseInt(input.value, 10));
+            return this.onBChange(input.value);
           },
         }),
         '.'
       ),
-      ' Then ',
-      h(AddDetail, { a, b, sum }),
-      ' so ',
-      spanNoWrap(
-        aVar,
-        ' ⊕ ',
-        bVar,
-        ` = ${sum.toString(2)}`,
-        h('sub', null, 'b'),
-        ` = ${sum.toString(10)}.`
-      )
+      ' ',
+      children
     );
   }
 }
