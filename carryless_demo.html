@@ -5,16 +5,17 @@
     <title>Binary carry-less arithmetic</title>
   </head>
   <body>
+    <script src="https://unpkg.com/preact@8.2.9"></script>
     <script src="carryless.js"></script>
     <script src="carryless_demo.js"></script>
     <div id="carrylessAddDemo">
       Let
       <span style="white-space: nowrap;">
-        <var>a</var> = <input type="text" value="23" />
+        <var>a</var> = 23
       </span>
       and
       <span style="white-space: nowrap;">
-        <var>b</var> = <input type="text" value="54" />.
+        <var>b</var> = 54.
       </span>
       Then
       <pre>  a = 23 =  10111b
@@ -23,15 +24,15 @@
            100001b</pre>
       so
       <span style="white-space: nowrap;">
-        <var>a</var> &oplus; <var>b</var> =
-        <span>100001</span><sub>b</sub> = <span>33</span>.
+        <var>a</var> &oplus; <var>b</var> = 100001<sub>b</sub> = 33.
       </span>
     </div>
     <script>
     'use strict';
     (function() {
+      const { h, render } = window.preact;
       const root = document.getElementById('carrylessAddDemo');
-      startCarrylessAddDemo(root);
+      render(h(AddDemo, { initialA: 23, initialB: 54 }), root.parent, root);
     })();
     </script>
   </body>
