@@ -1,8 +1,11 @@
+// @flow
+
 /* eslint-env jasmine */
 
-/* global carrylessAdd */
-
 'use strict';
+
+/* :: import { carrylessAdd } from './carryless'; */
+/* global carrylessAdd */
 
 describe('carryless', () => {
   it('add', () => {
