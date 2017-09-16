@@ -124,8 +124,13 @@ const parseNonNegativeInt = (
   return n;
 };
 
-const textInput = (value /* : string */, onChange /* : (string) => void */) =>
+const textInput = (
+  value /* : string */,
+  onChange /* : (string) => void */,
+  className /* :: ?: string */
+) =>
   preact.h('input', {
+    class: className,
     type: 'text',
     value,
     size: 12,
@@ -143,6 +148,13 @@ const styleNoWrap = { style: { whiteSpace: 'nowrap' } };
 const spanNoWrap = (...children) => preact.h('span', styleNoWrap, ...children);
 
 /* ::
+type AddDemoProps = {
+  name: string,
+  header?: HTMLElement,
+  containerClass?: string,
+  inputClass?: string,
+};
+
 type AddDemoState = {
   a: string,
   b: string,
@@ -151,13 +163,19 @@ type AddDemoState = {
 */
 
 // eslint-disable-next-line no-unused-vars
-class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
+class AddDemo extends preact.Component /* :: <AddDemoProps, AddDemoState> */ {
   constructor(
-    { initialA: a, initialB: b } /* : { initialA: string, initialB: string } */
+    // Should be { initialA: a, initialB: b, ...props }, but that is
+    // unsupported by Safari.
+    props /* : AddDemoProps & { initialA: string, initialB: string } */
   ) {
-    super({});
+    super(props);
     // Workaround for https://github.com/prettier/prettier/issues/719 .
-    const state /* : AddDemoState */ = { a, b, arithmeticType: 'carry-less' };
+    const state /* : AddDemoState */ = {
+      a: props.initialA,
+      b: props.initialB,
+      arithmeticType: 'carry-less',
+    };
     this.state = state;
   }
 
@@ -185,7 +203,7 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
     this.setState(state => ({ a: state.a, b: state.b, arithmeticType }));
   }
 
-  render(props /* : {} */, state /* : AddDemoState */) {
+  render(props /* : AddDemoProps */, state /* : AddDemoState */) {
     const { h } = preact;
 
     let children;
@@ -193,7 +211,7 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
       const a = parseNonNegativeInt('a', state.a);
       const b = parseNonNegativeInt('b', state.b);
 
-      const choiceGroupName = 'carrylessAddDemoArithmeticTypeChoice';
+      const choiceGroupName = `${props.name}ArithmeticTypeChoice`;
       const choiceRadio = (
         arithmeticType /* : ArithmeticType */,
         trailer /* : string */
@@ -249,18 +267,19 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
 
     return h(
       'div',
-      null,
+      { class: props.containerClass },
+      props.header,
       'Let ',
       spanNoWrap(
         inlineMath('a ='),
         ' ',
-        textInput(state.a, s => this.onAChange(s))
+        textInput(state.a, s => this.onAChange(s), props.inputClass)
       ),
       ' and ',
       spanNoWrap(
         inlineMath('b ='),
         ' ',
-        textInput(state.b, s => this.onBChange(s)),
+        textInput(state.b, s => this.onBChange(s), props.inputClass),
         '.'
       ),
       ' ',

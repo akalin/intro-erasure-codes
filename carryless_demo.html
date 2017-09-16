@@ -26,6 +26,7 @@
     </style>
 
     <div id="carrylessAddDemo">
+      <h3>Example 1: Carry-less addition</h3>
       Let
       <span style="white-space: nowrap;">
         <var>a</var> = 23
@@ -49,7 +50,11 @@
     (function() {
       const { h, render } = window.preact;
       const root = document.getElementById('carrylessAddDemo');
-      render(h(AddDemo, { initialA: '23', initialB: '54' }), root.parent, root);
+      render(h(AddDemo, {
+        initialA: '23', initialB: '54',
+        name: 'carrylessAddDemo',
+        header: h('h3', null, 'Interactive Example 1: Carry-less addition'),
+      }), root.parent, root);
     })();
     </script>
   </body>

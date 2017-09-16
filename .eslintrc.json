@@ -29,6 +29,7 @@
       // Should be "all", but Microsoft Edge doesn't support dangling
       // commas in function arguments yet.
       "trailingComma": "es5"
-    }]
+    }],
+    "react/destructuring-assignment": ["off"]
   }
 }
