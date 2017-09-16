@@ -85,6 +85,7 @@ type AddDemoProps = {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
+  resultColor: string,
 };
 
 type AddDemoState = {
@@ -157,6 +158,8 @@ class AddDemo extends preact.Component /* :: <AddDemoProps, AddDemoState> */ {
           [sum, op] = impossible(state.arithmeticType);
       }
 
+      const sumBin = sum.toString(2);
+      const sumDec = sum.toString(10);
       return [
         'Then, with ',
         arithmeticTypeChoice(
@@ -169,9 +172,9 @@ class AddDemo extends preact.Component /* :: <AddDemoProps, AddDemoState> */ {
         h(AddDetail, { a, b, sum, arithmeticType: state.arithmeticType }),
         ' so ',
         inlineMath(
-          `a ${op} b = ${sum.toString(2)}_{\\text{b}} = ${sum.toString(
-            10
-          )}\\text{.}`
+          `a ${op} b = ${sumBin}_{\\text{b}} = {\\color{${
+            props.resultColor
+          }}${sumDec}}\\text{.}`
         ),
       ];
     });

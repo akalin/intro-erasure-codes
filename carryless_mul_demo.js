@@ -130,6 +130,7 @@ type MulDemoProps = {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
+  resultColor: string,
 };
 
 type MulDemoState = {
@@ -200,6 +201,8 @@ class MulDemo extends preact.Component /* :: <MulDemoProps, MulDemoState> */ {
           [product, op] = impossible(state.arithmeticType);
       }
 
+      const productBin = product.toString(2);
+      const productDec = product.toString(10);
       return [
         'Then, with ',
         arithmeticTypeChoice(
@@ -217,9 +220,9 @@ class MulDemo extends preact.Component /* :: <MulDemoProps, MulDemoState> */ {
         }),
         ' so ',
         inlineMath(
-          `a ${op} b = ${product.toString(2)}_{\\text{b}} = ${product.toString(
-            10
-          )}\\text{.}`
+          `a ${op} b = ${productBin}_{\\text{b}} = {\\color{${
+            props.resultColor
+          }}${productDec}}\\text{.}`
         ),
       ];
     });
