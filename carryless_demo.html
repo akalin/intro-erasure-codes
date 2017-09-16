@@ -19,7 +19,9 @@
 
     <script src="inline_math.js"></script>
     <script src="carryless.js"></script>
-    <script src="carryless_demo.js"></script>
+    <script src="carryless_demo_common.js"></script>
+    <script src="carryless_add_demo.js"></script>
+    <script src="carryless_mul_demo.js"></script>
 
     <style>
     input:invalid { color: red; }
@@ -85,5 +87,19 @@
         <var>a</var> &otimes; <var>b</var> = 1111100010<sub>b</sub> = 994.
       </span>
     </div>
+
+    <div id="carrylessMulDemo"></div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('carrylessMulDemo');
+      render(h(MulDemo, {
+        initialA: '23', initialB: '54',
+        name: 'carrylessMulDemo',
+        header: h('h3', null, 'Interactive Example 2: Carry-less multiplication'),
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>
