@@ -124,12 +124,19 @@ const parseNonNegativeInt = (
   return n;
 };
 
-const getTargetInput = (e /* : Event */) /* : HTMLInputElement */ => {
-  if (!(e.target instanceof HTMLInputElement)) {
-    throw new Error('e.target unexpectedly not an HTMLInputElement');
-  }
-  return e.target;
-};
+const textInput = (value /* : string */, onChange /* : (string) => void */) =>
+  preact.h('input', {
+    type: 'text',
+    value,
+    size: 12,
+    pattern: '[0-9]+',
+    onInput: (e /* : Event */) => {
+      if (!(e.target instanceof HTMLInputElement)) {
+        throw new Error('e.target unexpectedly not an HTMLInputElement');
+      }
+      onChange(e.target.value);
+    },
+  });
 
 const styleNoWrap = { style: { whiteSpace: 'nowrap' } };
 
@@ -247,27 +254,13 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
       spanNoWrap(
         inlineMath('a ='),
         ' ',
-        h('input', {
-          type: 'text',
-          value: state.a,
-          onInput: (e /* : Event */) => {
-            const input = getTargetInput(e);
-            return this.onAChange(input.value);
-          },
-        })
+        textInput(state.a, s => this.onAChange(s))
       ),
       ' and ',
       spanNoWrap(
         inlineMath('b ='),
         ' ',
-        h('input', {
-          type: 'text',
-          value: state.b,
-          onInput: (e /* : Event */) => {
-            const input = getTargetInput(e);
-            return this.onBChange(input.value);
-          },
-        }),
+        textInput(state.b, s => this.onBChange(s)),
         '.'
       ),
       ' ',
