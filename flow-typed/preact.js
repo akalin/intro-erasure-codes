@@ -1,6 +1,7 @@
 declare class Component<Props, State> {
   props: Props;
   state: State;
+  base: HTMLElement;
 
   constructor(props: Props): Component<Props, State>;
 

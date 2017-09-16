@@ -2,12 +2,11 @@
 
 /* eslint-env browser */
 
-/* eslint no-bitwise: off */
-
 'use strict';
 
 /* :: import { carrylessAddBig } from './carryless'; */
-/* global preact, carrylessAddBig, BigInteger */
+/* :: import { inlineMath } from './inline_math'; */
+/* global preact, carrylessAddBig, BigInteger, inlineMath */
 
 const padStart = (
   s /* : string */,
@@ -107,8 +106,7 @@ const strictParseInt = (
   s /* : string */
 ) /* : BigInteger */ => {
   if (!/^[+-]?[0-9]+$/.test(s)) {
-    const nameVar = preact.h('var', null, name);
-    throw new VChildError([nameVar, ' is not a valid number.']);
+    throw new VChildError([inlineMath(name), ' is not a valid number.']);
   }
 
   return new BigInteger(s, 10);
@@ -119,10 +117,8 @@ const parseNonNegativeInt = (
   s /* : string */
 ) /* : BigInteger */ => {
   const n = strictParseInt(name, s);
-
   if (n.signum() < 0) {
-    const nameVar = preact.h('var', null, name);
-    throw new VChildError([nameVar, ' cannot be negative.']);
+    throw new VChildError([inlineMath(name), ' cannot be negative.']);
   }
 
   return n;
@@ -216,7 +212,7 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
           break;
         case 'carry-less':
           sum = carrylessAddBig(a, b);
-          op = '⊕';
+          op = '\\oplus';
           break;
         default:
           [sum, op] = impossible(state.arithmeticType);
@@ -230,13 +226,10 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
         ' ',
         h(AddDetail, { a, b, sum, arithmeticType: state.arithmeticType }),
         ' so ',
-        spanNoWrap(
-          h('var', null, 'a'),
-          ` ${op} `,
-          h('var', null, 'b'),
-          ` = ${sum.toString(2)}`,
-          h('sub', null, 'b'),
-          ` = ${sum.toString(10)}.`
+        inlineMath(
+          `a ${op} b = ${sum.toString(2)}_{\\text{b}} = ${sum.toString(
+            10
+          )}\\text{.}`
         ),
       ];
     } catch (e) {
@@ -252,8 +245,8 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
       null,
       'Let ',
       spanNoWrap(
-        h('var', null, 'a'),
-        ' = ',
+        inlineMath('a ='),
+        ' ',
         h('input', {
           type: 'text',
           value: state.a,
@@ -265,8 +258,8 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
       ),
       ' and ',
       spanNoWrap(
-        h('var', null, 'b'),
-        ' = ',
+        inlineMath('b ='),
+        ' ',
         h('input', {
           type: 'text',
           value: state.b,
