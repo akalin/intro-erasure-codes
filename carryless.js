@@ -41,13 +41,23 @@ const carrylessMulBig = (
   return product;
 };
 
+class DivisionByZeroError extends RangeError {
+  // flowlint-next-line unclear-type:off
+  constructor(...params /* : any[] */) {
+    super('Division by zero', ...params);
+    if (RangeError.captureStackTrace) {
+      RangeError.captureStackTrace(this, DivisionByZeroError);
+    }
+  }
+}
+
 // eslint-disable-next-line no-unused-vars
 const carrylessDiv32 = (
   a /* : number */,
   b /* : number */
 ) /* : { q: number, r:number } */ => {
   if (b >>> 0 === 0) {
-    throw new RangeError('Division by zero');
+    throw new DivisionByZeroError();
   }
 
   let q = 0;
@@ -60,6 +70,25 @@ const carrylessDiv32 = (
   return { q: q >>> 0, r };
 };
 
+// eslint-disable-next-line no-unused-vars
+const carrylessDivBig = (
+  a /* : BigInteger */,
+  b /* : BigInteger */
+) /* : { q: BigInteger, r:BigInteger } */ => {
+  if (b.signum() === 0) {
+    throw new DivisionByZeroError();
+  }
+
+  let q = BigInteger.ZERO;
+  let r = a;
+  while (r.bitLength() >= b.bitLength()) {
+    const shift = r.bitLength() - b.bitLength();
+    r = r.xor(b.shiftLeft(shift));
+    q = q.setBit(shift);
+  }
+  return { q, r };
+};
+
 /* ::
 export {
   carrylessAdd32,
@@ -67,5 +96,6 @@ export {
   carrylessMul32,
   carrylessMulBig,
   carrylessDiv32,
+  carrylessDivBig,
 };
 */

@@ -9,6 +9,7 @@ declare class BigInteger {
   shiftLeft(n: number): BigInteger;
   shiftRight(n: number): BigInteger;
   testBit(n: number): boolean;
+  setBit(n: number): BigInteger;
   add(a: BigInteger): BigInteger;
   multiply(a: BigInteger): BigInteger;
 

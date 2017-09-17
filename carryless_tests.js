@@ -13,6 +13,7 @@ import {
   carrylessMul32,
   carrylessMulBig,
   carrylessDiv32,
+  carrylessDivBig,
 } from './carryless';
 */
 /*
@@ -24,6 +25,7 @@ global
   carrylessMul32,
   carrylessMulBig,
   carrylessDiv32,
+  carrylessDivBig,
 */
 
 describe('carryless', () => {
@@ -129,6 +131,41 @@ describe('carryless', () => {
     expect(carrylessDiv32(0xf0000000, 0xffffffff)).toEqual({
       q: 1,
       r: 0xfffffff,
+    });
+  });
+
+  const carrylessDivBigStr = (
+    a /* : number | string */,
+    b /* : number | string */,
+    base /* : number */ = 10
+  ) => {
+    const { q, r } = carrylessDivBig(toBigInt(a, base), toBigInt(b, base));
+    return { q: q.toString(base), r: r.toString(base) };
+  };
+
+  it('divBig', () => {
+    expect(carrylessDivBigStr(4, 1)).toEqual({ q: '4', r: '0' });
+    expect(carrylessDivBigStr(4, 2)).toEqual({ q: '2', r: '0' });
+    expect(carrylessDivBigStr(4, 3)).toEqual({ q: '3', r: '1' });
+    expect(carrylessDivBigStr(4, 4)).toEqual({ q: '1', r: '0' });
+
+    expect(carrylessDivBigStr(7, 1)).toEqual({ q: '7', r: '0' });
+    expect(carrylessDivBigStr(7, 2)).toEqual({ q: '3', r: '1' });
+    expect(carrylessDivBigStr(7, 3)).toEqual({ q: '2', r: '1' });
+    expect(carrylessDivBigStr(7, 4)).toEqual({ q: '1', r: '3' });
+    expect(carrylessDivBigStr(7, 5)).toEqual({ q: '1', r: '2' });
+
+    expect(carrylessDivBigStr(0xffffffff, 1, 16)).toEqual({
+      q: 'ffffffff',
+      r: '0',
+    });
+    expect(carrylessDivBigStr(0xffffffff, 2, 16)).toEqual({
+      q: '7fffffff',
+      r: '1',
+    });
+    expect(carrylessDivBigStr(0xf0000000, 0xffffffff, 16)).toEqual({
+      q: '1',
+      r: 'fffffff',
     });
   });
 });
