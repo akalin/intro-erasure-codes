@@ -41,6 +41,31 @@ const carrylessMulBig = (
   return product;
 };
 
+// eslint-disable-next-line no-unused-vars
+const carrylessDiv32 = (
+  a /* : number */,
+  b /* : number */
+) /* : { q: number, r:number } */ => {
+  if (b >>> 0 === 0) {
+    throw new RangeError('Division by zero');
+  }
+
+  let q = 0;
+  let r = a >>> 0;
+  while (Math.clz32(b) >= Math.clz32(r)) {
+    const shift = Math.clz32(b) - Math.clz32(r);
+    r ^= b << shift;
+    q |= 1 << shift;
+  }
+  return { q: q >>> 0, r };
+};
+
 /* ::
-export { carrylessAdd32, carrylessAddBig, carrylessMul32, carrylessMulBig };
+export {
+  carrylessAdd32,
+  carrylessAddBig,
+  carrylessMul32,
+  carrylessMulBig,
+  carrylessDiv32,
+};
 */

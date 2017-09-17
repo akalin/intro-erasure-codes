@@ -12,6 +12,7 @@ import {
   carrylessAddBig,
   carrylessMul32,
   carrylessMulBig,
+  carrylessDiv32,
 } from './carryless';
 */
 /*
@@ -22,6 +23,7 @@ global
   carrylessAddBig,
   carrylessMul32,
   carrylessMulBig,
+  carrylessDiv32,
 */
 
 describe('carryless', () => {
@@ -108,5 +110,25 @@ describe('carryless', () => {
     expect(carrylessMulBigStr(0x80000000, 0x80000000, 16)).toEqual(
       '4000000000000000'
     );
+  });
+
+  it('div32', () => {
+    expect(carrylessDiv32(4, 1)).toEqual({ q: 4, r: 0 });
+    expect(carrylessDiv32(4, 2)).toEqual({ q: 2, r: 0 });
+    expect(carrylessDiv32(4, 3)).toEqual({ q: 3, r: 1 });
+    expect(carrylessDiv32(4, 4)).toEqual({ q: 1, r: 0 });
+
+    expect(carrylessDiv32(7, 1)).toEqual({ q: 7, r: 0 });
+    expect(carrylessDiv32(7, 2)).toEqual({ q: 3, r: 1 });
+    expect(carrylessDiv32(7, 3)).toEqual({ q: 2, r: 1 });
+    expect(carrylessDiv32(7, 4)).toEqual({ q: 1, r: 3 });
+    expect(carrylessDiv32(7, 5)).toEqual({ q: 1, r: 2 });
+
+    expect(carrylessDiv32(0xffffffff, 1)).toEqual({ q: 0xffffffff, r: 0 });
+    expect(carrylessDiv32(0xffffffff, 2)).toEqual({ q: 0x7fffffff, r: 1 });
+    expect(carrylessDiv32(0xf0000000, 0xffffffff)).toEqual({
+      q: 1,
+      r: 0xfffffff,
+    });
   });
 });
