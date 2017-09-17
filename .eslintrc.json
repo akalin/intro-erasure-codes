@@ -30,6 +30,7 @@
       // commas in function arguments yet.
       "trailingComma": "es5"
     }],
-    "react/destructuring-assignment": ["off"]
+    "react/destructuring-assignment": ["off"],
+    "no-underscore-dangle": ["off"]
   }
 }

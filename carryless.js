@@ -4,7 +4,11 @@
 
 'use strict';
 
-/* global BigInteger */
+/* ::
+import { DivisionByZeroError } from './arithmetic';
+*/
+
+/* global BigInteger, DivisionByZeroError */
 
 // eslint-disable-next-line no-unused-vars
 const carrylessAdd32 = (a /* : number */, b /* : number */) /* : number */ =>
@@ -40,16 +44,6 @@ const carrylessMulBig = (
   }
   return product;
 };
-
-class DivisionByZeroError extends RangeError {
-  // flowlint-next-line unclear-type:off
-  constructor(...params /* : any[] */) {
-    super('Division by zero', ...params);
-    if (RangeError.captureStackTrace) {
-      RangeError.captureStackTrace(this, DivisionByZeroError);
-    }
-  }
-}
 
 // eslint-disable-next-line no-unused-vars
 const carrylessDiv32 = (
