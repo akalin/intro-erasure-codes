@@ -105,5 +105,36 @@
       }), root.parent, root);
     })();
     </script>
+
+    <div>
+      <h3>Example 3: Carry-less division</h3>
+      Let
+      <span style="white-space: nowrap;">
+        <var>a</var> = 55
+      </span>
+      and
+      <span style="white-space: nowrap;">
+        <var>b</var> = 19.
+      </span>
+      Then, with carry-less arithmetic,
+      <pre>                     11b
+                --------
+b = 19 = 10011b )110111b = 55 = a
+               ^ 10011
+                 -----
+                  10001
+                ^ 10011
+                  -----
+                     10b</pre>
+      so
+      <span style="white-space: nowrap;">
+        <var>a</var> &odiv; <var>b</var> = 11<sub>b</sub> =
+        <span style="color: red;">3</span>
+      </span>
+      with remainder
+      <span style="white-space: nowrap;">
+        10<sub>b</sub> = <span style="color: red;">2</span>.
+      </span>
+    </div>
   </body>
 </html>
