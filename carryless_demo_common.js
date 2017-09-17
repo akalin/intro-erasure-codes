@@ -100,6 +100,18 @@ const addOpStr = (arithmeticType /* : ArithmeticType */) /* : string */ => {
 };
 
 // eslint-disable-next-line no-unused-vars
+const subOpStr = (arithmeticType /* : ArithmeticType */) /* : string */ => {
+  switch (arithmeticType) {
+    case 'standard':
+      return '-';
+    case 'carry-less':
+      return '^';
+    default:
+      return impossible(arithmeticType);
+  }
+};
+
+// eslint-disable-next-line no-unused-vars
 const mulOpStr = (arithmeticType /* : ArithmeticType */) /* : string */ => {
   switch (arithmeticType) {
     case 'standard':
@@ -192,6 +204,7 @@ export {
   parseNonNegativeInt,
   impossible,
   addOpStr,
+  subOpStr,
   mulOpStr,
   binaryOpInput,
   arithmeticTypeChoice,
