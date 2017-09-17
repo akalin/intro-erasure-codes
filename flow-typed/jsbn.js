@@ -5,6 +5,7 @@ declare class BigInteger {
   compareTo(a: BigInteger): number;
   bitLength(): number;
 
+  intValue(): number;
   signum(): number;
   xor(a: BigInteger): BigInteger;
   shiftLeft(n: number): BigInteger;
@@ -14,6 +15,7 @@ declare class BigInteger {
   add(a: BigInteger): BigInteger;
   subtract(a: BigInteger): BigInteger;
   multiply(a: BigInteger): BigInteger;
+  remainder(a: BigInteger): BigInteger;
   divideAndRemainder(a: BigInteger): [ BigInteger, BigInteger ];
 
   static ZERO: BigInteger;

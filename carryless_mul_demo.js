@@ -6,15 +6,15 @@
 
 /* ::
 import { carrylessMulBig } from './carryless';
+import { handleVChildError, binaryOpInput } from './demo_common';
 import {
   padStart,
-  handleVChildError,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   addOpStr,
   mulOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 } from './carryless_demo_common';
 import { inlineMath } from './inline_math';
@@ -25,13 +25,15 @@ global
 
   carrylessMulBig,
 
-  padStart,
   handleVChildError,
+  binaryOpInput,
+
+  padStart,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   impossible,
   addOpStr,
   mulOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 
   inlineMath
@@ -231,11 +233,13 @@ class MulDemo extends preact.Component /* :: <MulDemoProps, MulDemoState> */ {
       'div',
       { class: props.containerClass },
       props.header,
+      'Let ',
       binaryOpInput(
         state.a,
         state.b,
         s => this.onAChange(s),
         s => this.onBChange(s),
+        nonNegativeIntPatternCapped,
         props.inputClass
       ),
       ' ',

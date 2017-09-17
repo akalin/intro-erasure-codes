@@ -5,6 +5,28 @@
     <title>Fields</title>
   </head>
   <body>
+    <script src="https://unpkg.com/preact@8.2.7"></script>
+
+    <script src="https://cdn.rawgit.com/jasondavies/jsbn/v1.4/jsbn.js"></script>
+    <script src="https://cdn.rawgit.com/jasondavies/jsbn/v1.4/jsbn2.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>
+
+    <style>
+    .katex { font-size: 1.0em; }
+    </style>
+
+    <script src="arithmetic.js"></script>
+    <script src="inline_math.js"></script>
+    <script src="demo_common.js"></script>
+    <script src="field_257.js"></script>
+    <script src="field_257_demo.js"></script>
+
+    <style>
+    input:invalid { color: red; }
+    </style>
+
     <div>
       <h3>Example 1: Field with 257 elements</h3>
       Denote operations on the field with 257
@@ -63,5 +85,20 @@
         </li>
       </ul>
     </div>
+
+    <div id="field257Demo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('field257Demo');
+      render(h(Field257Demo, {
+        initialA: '23', initialB: '54',
+        header: h('h3', null, 'Interactive Example 1: Field with 257 elements'),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>

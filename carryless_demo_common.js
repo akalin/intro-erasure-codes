@@ -4,9 +4,11 @@
 
 'use strict';
 
-/* :: import { inlineMath } from './inline_math'; */
-
-/* global preact, BigInteger, inlineMath */
+/* ::
+import { strictParseInt, VChildError, styleNoWrap } from './demo_common';
+import { inlineMath } from './inline_math';
+*/
+/* global preact, strictParseInt, VChildError, styleNoWrap, inlineMath */
 
 // eslint-disable-next-line no-unused-vars
 const padStart = (
@@ -26,45 +28,7 @@ const padStart = (
   return padding.slice(0, padLength) + s;
 };
 
-class VChildError extends Error {
-  /* ::
-  children: VChild[];
-  */
-
-  // flowlint-next-line unclear-type:off
-  constructor(children /* : VChild[] */, ...params /* : any[] */) {
-    super(...params);
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, VChildError);
-    }
-    this.children = children;
-  }
-}
-
 // eslint-disable-next-line no-unused-vars
-const handleVChildError = (fn /* : () => VChild[] */) /* : VChild[] */ => {
-  try {
-    return fn();
-  } catch (e) {
-    if (!(e instanceof VChildError)) {
-      throw e;
-    }
-
-    return e.children;
-  }
-};
-
-const strictParseInt = (
-  name /* : string */,
-  s /* : string */
-) /* : BigInteger */ => {
-  if (!/^[+-]?[0-9]+$/.test(s)) {
-    throw new VChildError([inlineMath(name), ' is not a valid number.']);
-  }
-
-  return new BigInteger(s, 10);
-};
-
 const parseNonNegativeInt = (
   name /* : string */,
   s /* : string */
@@ -78,6 +42,9 @@ const parseNonNegativeInt = (
 };
 
 const digitBound = 50;
+
+// eslint-disable-next-line no-unused-vars
+const nonNegativeIntPatternCapped = `0*[0-9]{1,${digitBound}}`;
 
 // eslint-disable-next-line no-unused-vars
 const parseNonNegativeIntCapped = (
@@ -137,52 +104,6 @@ const mulOpStr = (arithmeticType /* : ArithmeticType */) /* : string */ => {
   }
 };
 
-const textInput = (
-  value /* : string */,
-  onChange /* : (string) => void */,
-  className /* : ?string */
-) =>
-  preact.h('input', {
-    class: className,
-    type: 'text',
-    value,
-    size: 12,
-    pattern: `0*[0-9]{1,${digitBound}}`,
-    onInput: (e /* : Event */) => {
-      if (!(e.target instanceof HTMLInputElement)) {
-        throw new Error('e.target unexpectedly not an HTMLInputElement');
-      }
-      onChange(e.target.value);
-    },
-  });
-
-const styleNoWrap = { style: { whiteSpace: 'nowrap' } };
-
-const spanNoWrap = (...children) => preact.h('span', styleNoWrap, ...children);
-
-// eslint-disable-next-line no-unused-vars
-const binaryOpInput = (
-  aValue /* : string */,
-  bValue /* : string */,
-  onAChange /* : (string) => void */,
-  onBChange /* : (string) => void */,
-  inputClass /* : ?string */
-) => [
-  'Let ',
-  spanNoWrap(
-    inlineMath('a ='),
-    ' ',
-    textInput(aValue, s => onAChange(s), inputClass)
-  ),
-  ' and ',
-  spanNoWrap(
-    inlineMath('b ='),
-    ' ',
-    textInput(bValue, s => onBChange(s), inputClass),
-    '.'
-  ),
-];
-
 // eslint-disable-next-line no-unused-vars
 const arithmeticTypeChoice = (
   name /* : string */,
@@ -213,14 +134,12 @@ const arithmeticTypeChoice = (
 /* ::
 export {
   padStart,
-  VChildError,
-  handleVChildError,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   impossible,
   addOpStr,
   subOpStr,
   mulOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 };
 export type { ArithmeticType };

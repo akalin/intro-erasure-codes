@@ -6,14 +6,14 @@
 
 /* ::
 import { carrylessAddBig } from './carryless';
+import { handleVChildError, binaryOpInput } from './demo_common';
 import {
   padStart,
-  handleVChildError,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   addOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 } from './carryless_demo_common';
 import { inlineMath } from './inline_math';
@@ -24,12 +24,14 @@ global
 
   carrylessAddBig,
 
-  padStart,
   handleVChildError,
+  binaryOpInput,
+
+  padStart,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   impossible,
   addOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 
   inlineMath,
@@ -183,11 +185,13 @@ class AddDemo extends preact.Component /* :: <AddDemoProps, AddDemoState> */ {
       'div',
       { class: props.containerClass },
       props.header,
+      'Let ',
       binaryOpInput(
         state.a,
         state.b,
         s => this.onAChange(s),
         s => this.onBChange(s),
+        nonNegativeIntPatternCapped,
         props.inputClass
       ),
       ' ',

@@ -6,14 +6,14 @@
 
 /* ::
 import { carrylessDivBig } from './carryless';
+import { handleVChildError, binaryOpInput } from './demo_common';
 import {
   padStart,
-  handleVChildError,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   subOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
 } from './carryless_demo_common';
 import { computeIntermediates } from './carryless_div_demo_util';
@@ -25,12 +25,14 @@ global
 
   carrylessDivBig,
 
-  padStart,
   handleVChildError,
+  binaryOpInput,
+
+  padStart,
+  nonNegativeIntPatternCapped,
   parseNonNegativeIntCapped,
   impossible,
   subOpStr,
-  binaryOpInput,
   arithmeticTypeChoice,
   computeIntermediates,
 
@@ -217,11 +219,13 @@ class DivDemo extends preact.Component /* :: <DivDemoProps, DivDemoState> */ {
       'div',
       { class: props.containerClass },
       props.header,
+      'Let ',
       binaryOpInput(
         state.a,
         state.b,
         s => this.onAChange(s),
         s => this.onBChange(s),
+        nonNegativeIntPatternCapped,
         props.inputClass
       ),
       ' ',
