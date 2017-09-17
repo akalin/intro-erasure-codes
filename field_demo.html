@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fields</title>
+  </head>
+  <body>
+    <div>
+      <h3>Example 1: Field with 257 elements</h3>
+      Denote operations on the field with 257
+      elements by a <sub>257</sub> subscript, and let
+      <span style="white-space: nowrap;">
+        <var>a</var> = 23
+      </span>
+      and
+      <span style="white-space: nowrap;">
+        <var>b</var> = 54.
+      </span>
+      Then
+      <ul>
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> +<sub>257</sub> <var>b</var> = (23 + 54) mod 257 = <span style="color: red;">77</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            &minus;<sub>257</sub><var>b</var> = (257 &minus; 54) mod 257 = <span style="color: red;">203</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &minus;<sub>257</sub> <var>b</var> = <var>a</var> +<sub>257</sub> &minus;<sub>257</sub><var>b</var> = (23 + 203) mod 257 = <span style="color: red;">226</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &times;<sub>257</sub> <var>b</var> = (23 &times; 54) mod 257 = <span style="color: red;">214</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            54 &times;<sub>257</sub> 119 = 1,
+          </span>
+          so
+          <span style="white-space: nowrap;">
+            <var>b</var><sup>-1</sup><sub>257</sub> = <span style="color: red;">119</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &divide;<sub>257</sub> <var>b</var> = <var>a</var> &times;<sub>257</sub> <var>b</var><sup>-1</sup><sub>257</sub> = (23 &times; 119) mod 257 = <span style="color: red;">167</span>,
+          </span>
+          and indeed
+          <span style="white-space: nowrap;">
+            <var>b</var> &times;<sub>257</sub> (<var>a</var> &divide;<sub>257</sub> <var>b</var>) = (54 &times; 167) mod 257 = 23 = <var>a</var>.
+          </span>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
