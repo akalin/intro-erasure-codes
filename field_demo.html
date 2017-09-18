@@ -21,7 +21,11 @@
     <script src="inline_math.js"></script>
     <script src="demo_common.js"></script>
     <script src="field_257.js"></script>
+    <script src="carryless.js"></script>
+    <script src="field_256.js"></script>
+    <script src="field_demo_common.js"></script>
     <script src="field_257_demo.js"></script>
+    <script src="field_256_demo.js"></script>
 
     <style>
     input:invalid { color: red; }
@@ -159,5 +163,20 @@
         </li>
       </ul>
     </div>
+
+    <div id="field256Demo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('field256Demo');
+      render(h(Field256Demo, {
+        initialA: '23', initialB: '54',
+        header: h('h3', null, 'Interactive Example 2: Field with 256 elements'),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>

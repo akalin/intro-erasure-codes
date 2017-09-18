@@ -55,6 +55,11 @@ const strictParseInt = (
 const isEdge = window.navigator.userAgent.indexOf('Edge/') > 0;
 
 // eslint-disable-next-line no-unused-vars
+const field256Pattern = isEdge
+  ? '0*[0-9]{1,3}'
+  : '0*(([0-9])|([0-9]{2})|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))';
+
+// eslint-disable-next-line no-unused-vars
 const field257Pattern = isEdge
   ? '0*[0-9]{1,3}'
   : '0*(([0-9])|([0-9]{2})|(1[0-9]{2})|(2[0-4][0-9])|(25[0-6]))';
@@ -111,6 +116,7 @@ const binaryOpInput = (
   handleVChildError,
   strictParseInt,
   isEdge,
+  field256Pattern,
   field257Pattern,
   styleNoWrap,
   binaryOpInput,

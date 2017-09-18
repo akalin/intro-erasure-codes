@@ -5,10 +5,10 @@
 'use strict';
 
 /* ::
-import { Field257Element } from './field_257';
+import { Field256Element } from './field_256';
 import {
   handleVChildError,
-  field257Pattern,
+  field256Pattern,
   binaryOpInput,
 } from './demo_common';
 import { parseNonNegativeBoundedInt } from './field_demo_common';
@@ -18,10 +18,10 @@ import { inlineMath } from './inline_math';
 global
   preact,
 
-  Field257Element,
+  Field256Element,
 
   handleVChildError,
-  field257Pattern,
+  field256Pattern,
   binaryOpInput,
 
   parseNonNegativeBoundedInt,
@@ -29,32 +29,32 @@ global
   inlineMath,
 */
 
-const parseField257Element = (
+const parseField256Element = (
   name /* : string */,
   s /* : string */
-) /* : Field257Element */ =>
-  new Field257Element(parseNonNegativeBoundedInt(name, s, 257));
+) /* : Field256Element */ =>
+  new Field256Element(parseNonNegativeBoundedInt(name, s, 256));
 
 /* ::
-type Field257DemoProps = {
+type Field256DemoProps = {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
   resultColor: string,
 };
 
-type Field257DemoState = {
+type Field256DemoState = {
   a: string,
   b: string,
 };
 */
 
 // eslint-disable-next-line no-unused-vars
-class Field257Demo extends preact.Component /* :: <Field257DemoProps, Field257DemoState> */ {
+class Field256Demo extends preact.Component /* :: <Field256DemoProps, Field256DemoState> */ {
   constructor(
     // Should be { initialA: a, initialB: b, ...props }, but that is
     // unsupported by Safari.
-    props /* : Field257DemoProps & { initialA: string, initialB: string } */
+    props /* : Field256DemoProps & { initialA: string, initialB: string } */
   ) {
     super(props);
     this.state = {
@@ -73,68 +73,59 @@ class Field257Demo extends preact.Component /* :: <Field257DemoProps, Field257De
     this.setState(state => ({ a: state.a, b }));
   }
 
-  render(props /* : Field257DemoProps */, state /* : Field257DemoState */) {
+  render(props /* : Field256DemoProps */, state /* : Field256DemoState */) {
     const { h } = preact;
 
     const children = handleVChildError(() => {
-      const a = parseField257Element('a', state.a);
-      const b = parseField257Element('b', state.b);
+      const a = parseField256Element('a', state.a);
+      const b = parseField256Element('b', state.b);
 
       const sum = a.plus(b);
-      const bNegation = Field257Element.Zero.minus(b);
-      const difference = a.minus(b);
       const product = a.times(b);
 
       const aStr = a.toString(10);
       const bStr = b.toString(10);
-      const bNegationStr = bNegation.toString(10);
 
       const color = s => `{\\color{${props.resultColor}}${s}}`;
-
-      // Workaround for https://github.com/Khan/KaTeX/issues/982 .
-      const bmod = '\\mathbin{\\mathrm{mod}}';
 
       const sumStr = color(sum.toString(10));
       const plusItem = [
         inlineMath(
-          `a +_{257} b = (${aStr} + ${bStr}) ${bmod} 257 = ${sumStr}\\text{;}`
+          `a \\oplus_{256} b = a \\ominus_{256} b = ${aStr} \\oplus ${bStr} = ${sumStr}\\text{;}`
         ),
       ];
 
-      const negationStr = color(bNegationStr);
+      const negationStr = color(b.toString(10));
       const negationItem = [
-        inlineMath(
-          `-_{257}b = (257 - ${bStr}) ${bmod} 257 = ${negationStr}\\text{;}`
-        ),
+        inlineMath(`\\ominus_{256}b = b = ${negationStr}\\text{;}`),
       ];
 
-      const differenceStr = color(difference.toString(10));
       const minusItem = [
         inlineMath(
-          `a -_{257} b = a +_{257} -_{257}b = (${aStr} + ${bNegationStr}) ${bmod} 257 = ${differenceStr}\\text{;}`
+          `a \\ominus_{256} b = a \\oplus_{256} \\ominus_{256}b = a \\oplus_{256} b = ${sumStr}\\text{;}`
         ),
       ];
 
       const productStr = color(product.toString(10));
       const timesItem = [
         inlineMath(
-          `a \\times_{257} b = (${aStr} \\times ${bStr}) ${bmod} 257 = ${productStr}\\text{;}`
+          `a \\otimes_{256} b = (${aStr} \\otimes ${bStr}) \\mathbin{\\mathrm{clmod}} 283 = ${productStr}\\text{;}`
         ),
       ];
 
       let divItems;
-      if (b.equals(Field257Element.Zero)) {
+      if (b.equals(Field256Element.Zero)) {
         divItems = [
           [
             'and ',
-            inlineMath(`{b^{-1}}_{257}`),
+            inlineMath(`{b^{-1}}_{256}`),
             ' and ',
-            inlineMath(`a \\div_{257} b`),
+            inlineMath(`a \\div_{256} b`),
             ' are undefined.',
           ],
         ];
       } else {
-        const bInv = Field257Element.One.dividedBy(b);
+        const bInv = Field256Element.One.dividedBy(b);
         const quotient = a.dividedBy(b);
 
         const bInvStr = bInv.toString(10);
@@ -143,17 +134,17 @@ class Field257Demo extends preact.Component /* :: <Field257DemoProps, Field257De
 
         divItems = [
           [
-            inlineMath(`${bStr} \\times_{257} ${bInvStr} = 1\\text{,}`),
+            inlineMath(`${bStr} \\otimes_{256} ${bInvStr} = 1\\text{,}`),
             ' so ',
-            inlineMath(`{b^{-1}}_{257} = ${color(bInvStr)}\\text{;}`),
+            inlineMath(`{b^{-1}}_{256} = ${color(bInvStr)}\\text{;}`),
           ],
           [
             inlineMath(
-              `a \\div_{257} b = a \\times_{257} {b^{-1}}_{257} = (${aStr} \\times ${bInvStr}) ${bmod} 257 = ${coloredQuotientStr}\\text{,}`
+              `a \\oslash_{256} b = a \\otimes_{256} {b^{-1}}_{256} = (${aStr} \\otimes ${bInvStr}) \\mathbin{\\mathrm{clmod}} 283 = ${coloredQuotientStr}\\text{,}`
             ),
             ' and indeed ',
             inlineMath(
-              `b \\times_{257} (a \\div_{257} b) = (${bStr} \\times ${quotientStr}) ${bmod} 257 = ${aStr} = a\\text{.}`
+              `b \\otimes_{256} (a \\oslash_{256} b) = (${bStr} \\otimes ${quotientStr}) \\mathbin{\\mathrm{clmod}} 283 = ${aStr} = a\\text{.}`
             ),
           ],
         ];
@@ -176,16 +167,16 @@ class Field257Demo extends preact.Component /* :: <Field257DemoProps, Field257De
       { class: props.containerClass },
       props.header,
       'Denote operations on the field with ',
-      inlineMath('257'),
+      inlineMath('256'),
       ' elements by a ',
-      inlineMath('{}_{257}'),
+      inlineMath('{}_{256}'),
       ' subscript, and let ',
       binaryOpInput(
         state.a,
         state.b,
         s => this.onAChange(s),
         s => this.onBChange(s),
-        field257Pattern,
+        field256Pattern,
         props.inputClass
       ),
       ' ',
