@@ -5,13 +5,14 @@
 'use strict';
 
 /* ::
+import { type Field } from './field';
 import { DivisionByZeroError } from './arithmetic';
 */
 
 /* global DivisionByZeroError */
 
 // eslint-disable-next-line no-unused-vars
-class Field257Element {
+class Field257Element /* :: implements Field<Field257Element> */ {
   /* ::
   _n: number;
   static Zero: Field257Element;
@@ -61,6 +62,14 @@ class Field257Element {
 
   equals(b /* : Field257Element */) /* : boolean */ {
     return this._n === b._n;
+  }
+
+  zero() /* : Field257Element */ {
+    return this.constructor.Zero;
+  }
+
+  one() /* : Field257Element */ {
+    return this.constructor.One;
   }
 }
 
