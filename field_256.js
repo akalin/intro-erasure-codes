@@ -5,6 +5,7 @@
 'use strict';
 
 /* ::
+import { type Field } from './field';
 import { DivisionByZeroError } from './arithmetic';
 import { carrylessMul32, carrylessDiv32 } from './carryless';
 */
@@ -12,7 +13,7 @@ import { carrylessMul32, carrylessDiv32 } from './carryless';
 /* global DivisionByZeroError, carrylessMul32, carrylessDiv32 */
 
 // eslint-disable-next-line no-unused-vars
-class Field256Element {
+class Field256Element /* :: implements Field<Field256Element> */ {
   /* ::
   _n: number;
   static Zero: Field256Element;
@@ -64,6 +65,14 @@ class Field256Element {
 
   equals(b /* : Field256Element */) /* : boolean */ {
     return this._n === b._n;
+  }
+
+  zero() /* : Field256Element */ {
+    return this.constructor.Zero;
+  }
+
+  one() /* : Field256Element */ {
+    return this.constructor.One;
   }
 }
 
