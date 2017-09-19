@@ -8,8 +8,19 @@
 import { Matrix, newCauchyMatrix } from './matrix';
 import { Field256Element } from './field_256';
 import { Field257Element } from './field_257';
+import { BigRational } from './rational';
 */
-/* global Matrix, newCauchyMatrix, Field256Element, Field257Element */
+/*
+global
+  Matrix,
+  newCauchyMatrix,
+
+  Field256Element,
+
+  Field257Element,
+
+  BigRational,
+*/
 
 describe('Matrix', () => {
   it('array constructor', () => {
@@ -71,6 +82,74 @@ describe('Matrix', () => {
     expect(product._elements).toEqual(
       [39, 54, 69, 49, 68, 87].map(x => new Field257Element(x))
     );
+  });
+
+  it('inverse identity', () => {
+    const zero = Field257Element.Zero;
+    const one = Field257Element.One;
+
+    const size = 5;
+    const m = new Matrix(size, size, (i, j) => (i === j ? one : zero));
+    const mInv = m.inverse();
+    expect(mInv).toEqual(m);
+  });
+
+  it('inverse scalar rational', () => {
+    const zero = BigRational.Zero;
+    const one = BigRational.One;
+    const two = one.plus(one);
+    const oneHalf = one.dividedBy(two);
+
+    const size = 5;
+    const m = new Matrix(size, size, (i, j) => (i === j ? two : zero));
+    const mInv = m.inverse();
+    const mInvExpected = new Matrix(
+      size,
+      size,
+      (i, j) => (i === j ? oneHalf : zero)
+    );
+    expect(mInv).toEqual(mInvExpected);
+  });
+
+  it('inverse scalar GF(256)', () => {
+    const zero = Field256Element.Zero;
+    const one = Field256Element.One;
+    const two = new Field256Element(2);
+    const twoInv = one.dividedBy(two);
+
+    const size = 5;
+    const m = new Matrix(size, size, (i, j) => (i === j ? two : zero));
+    const mInv = m.inverse();
+    const mInvExpected = new Matrix(
+      size,
+      size,
+      (i, j) => (i === j ? twoInv : zero)
+    );
+    expect(mInv).toEqual(mInvExpected);
+  });
+
+  it('inverse GF(257)', () => {
+    const mElements = [1, 1, 1, 2, 4, 8, 3, 9, 27].map(
+      x => new Field257Element(x)
+    );
+    const m = new Matrix(3, 3, mElements);
+
+    const zero = Field257Element.Zero;
+    const one = Field257Element.One;
+
+    const identity = new Matrix(3, 3, (i, j) => (i === j ? one : zero));
+
+    const mInv = m.inverse();
+    expect(m.times(mInv)).toEqual(identity);
+    expect(mInv.times(m)).toEqual(identity);
+  });
+
+  it('inverse singular', () => {
+    const mElements = [1, 1, 1, 2, 4, 8, 3, 5, 9].map(
+      x => new Field257Element(x)
+    );
+    const m = new Matrix(3, 3, mElements);
+    expect(() => m.inverse()).toThrowError('Singular matrix');
   });
 
   it('Cauchy matrix GF(257)', () => {
