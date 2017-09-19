@@ -87,6 +87,96 @@ ${elementStr}
       return t;
     });
   }
+
+  _swapRows(i /* : number */, j /* : number */) {
+    if (i === j) {
+      return;
+    }
+
+    for (let k = 0; k < this._columns; k += 1) {
+      const a1 = i * this._columns + k;
+      const a2 = j * this._columns + k;
+      const t = this._elements[a1];
+      this._elements[a1] = this._elements[a2];
+      this._elements[a2] = t;
+    }
+  }
+
+  _divideRow(i /* : number */, c /* : T */) {
+    for (let k = 0; k < this._columns; k += 1) {
+      const a = i * this._columns + k;
+      this._elements[a] = this._elements[a].dividedBy(c);
+    }
+  }
+
+  _subtractScaledRow(dest /* : number */, src /* : number */, c /* : T */) {
+    for (let k = 0; k < this._columns; k += 1) {
+      const aDest = dest * this._columns + k;
+      const aSrc = src * this._columns + k;
+      this._elements[aDest] = this._elements[aDest].minus(
+        this._elements[aSrc].times(c)
+      );
+    }
+  }
+
+  _rowReduceForInverse(n /* : Matrix<T> */) {
+    const zero = this.zeroElement();
+    for (let i = 0; i < this._rows; i += 1) {
+      let pivot = zero;
+      for (let j = i; j < this._rows; j += 1) {
+        if (!this.at(j, i).equals(zero)) {
+          this._swapRows(i, j);
+          n._swapRows(i, j);
+          pivot = this.at(i, i);
+          break;
+        }
+      }
+
+      if (pivot.equals(zero)) {
+        throw new Error('Singular matrix');
+      }
+
+      this._divideRow(i, pivot);
+      n._divideRow(i, pivot);
+
+      for (let j = i + 1; j < this._rows; j += 1) {
+        const t = this.at(j, i);
+        if (!t.equals(zero)) {
+          this._subtractScaledRow(j, i, t);
+          n._subtractScaledRow(j, i, t);
+        }
+      }
+    }
+
+    for (let i = 0; i < this._rows; i += 1) {
+      for (let j = 0; j < i; j += 1) {
+        const t = this.at(j, i);
+        if (!t.equals(zero)) {
+          this._subtractScaledRow(j, i, t);
+          n._subtractScaledRow(j, i, t);
+        }
+      }
+    }
+  }
+
+  inverse() /* : Matrix<T> */ {
+    if (this._rows !== this._columns) {
+      throw new Error('Cannot invert non-square matrix');
+    }
+
+    const zero = this.zeroElement();
+    const one = this.oneElement();
+
+    const mInv = new Matrix(
+      this._rows,
+      this._rows,
+      (i, j) => (i === j ? one : zero)
+    );
+
+    const clone = new Matrix(this._rows, this._columns, this._elements);
+    clone._rowReduceForInverse(mInv);
+    return mInv;
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
