@@ -5,10 +5,11 @@
 'use strict';
 
 /* ::
-import { Matrix } from './matrix';
+import { Matrix, newCauchyMatrix } from './matrix';
+import { Field256Element } from './field_256';
 import { Field257Element } from './field_257';
 */
-/* global Matrix, Field257Element */
+/* global Matrix, newCauchyMatrix, Field256Element, Field257Element */
 
 describe('Matrix', () => {
   it('array constructor', () => {
@@ -70,5 +71,33 @@ describe('Matrix', () => {
     expect(product._elements).toEqual(
       [39, 54, 69, 49, 68, 87].map(x => new Field257Element(x))
     );
+  });
+
+  it('Cauchy matrix GF(257)', () => {
+    const x = [3, 4].map(t => new Field257Element(t));
+    const y = [0, 1, 2].map(t => new Field257Element(t));
+    const m = newCauchyMatrix(x, y);
+    const mExpected = new Matrix(
+      x.length,
+      y.length,
+      [3, 2, 1, 4, 3, 2].map(t =>
+        Field257Element.One.dividedBy(new Field257Element(t))
+      )
+    );
+    expect(m).toEqual(mExpected);
+  });
+
+  it('Cauchy matrix GF(256)', () => {
+    const x = [3, 4].map(t => new Field256Element(t));
+    const y = [0, 1, 2].map(t => new Field256Element(t));
+    const m = newCauchyMatrix(x, y);
+    const mExpected = new Matrix(
+      x.length,
+      y.length,
+      [3, 2, 1, 4, 5, 6].map(t =>
+        Field256Element.One.dividedBy(new Field256Element(t))
+      )
+    );
+    expect(m).toEqual(mExpected);
   });
 });
