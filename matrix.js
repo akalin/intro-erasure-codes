@@ -45,6 +45,22 @@ class Matrix /* :: <T: Field<*>> */ {
     return this._elements[0].one();
   }
 
+  toLaTeXString() /* : string */ {
+    const rowStrs = [];
+    for (let i = 0; i < this._rows; i += 1) {
+      const row = this._elements.slice(
+        i * this._columns,
+        (i + 1) * this._columns
+      );
+      const rowStr = row.map(x => x.toString()).join(' & ');
+      rowStrs.push(rowStr);
+    }
+    const elementStr = rowStrs.join(' \\\\\n');
+    return `\\begin{pmatrix}
+${elementStr}
+\\end{pmatrix}`;
+  }
+
   at(i /* : number */, j /* : number */) /* : T */ {
     if (i < 0 || i >= this._rows) {
       throw new RangeError('Row index out of bounds');
@@ -73,6 +89,15 @@ class Matrix /* :: <T: Field<*>> */ {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+const newCauchyMatrix = /* :: <T: Field<*>> */ (
+  x /* : T[] */,
+  y /* : T[] */
+) /* : Matrix<T> */ =>
+  new Matrix(x.length, y.length, (i, j) =>
+    x[i].one().dividedBy(x[i].minus(y[j]))
+  );
+
 /* ::
-export { Matrix };
+export { Matrix, newCauchyMatrix };
 */

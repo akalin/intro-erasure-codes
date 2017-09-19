@@ -8,10 +8,10 @@
 import { Field257Element } from './field_257';
 import {
   handleVChildError,
+  parseField257Element,
   field257Pattern,
   binaryOpInput,
 } from './demo_common';
-import { parseNonNegativeBoundedInt } from './field_demo_common';
 import { inlineMath } from './inline_math';
 */
 /*
@@ -21,19 +21,12 @@ global
   Field257Element,
 
   handleVChildError,
+  parseField257Element,
   field257Pattern,
   binaryOpInput,
 
-  parseNonNegativeBoundedInt,
-
   inlineMath,
 */
-
-const parseField257Element = (
-  name /* : string */,
-  s /* : string */
-) /* : Field257Element */ =>
-  new Field257Element(parseNonNegativeBoundedInt(name, s, 257));
 
 /* ::
 type Field257DemoProps = {

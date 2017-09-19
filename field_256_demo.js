@@ -8,10 +8,10 @@
 import { Field256Element } from './field_256';
 import {
   handleVChildError,
+  parseField256Element,
   field256Pattern,
   binaryOpInput,
 } from './demo_common';
-import { parseNonNegativeBoundedInt } from './field_demo_common';
 import { inlineMath } from './inline_math';
 */
 /*
@@ -21,19 +21,12 @@ global
   Field256Element,
 
   handleVChildError,
+  parseField256Element,
   field256Pattern,
   binaryOpInput,
 
-  parseNonNegativeBoundedInt,
-
   inlineMath,
 */
-
-const parseField256Element = (
-  name /* : string */,
-  s /* : string */
-) /* : Field256Element */ =>
-  new Field256Element(parseNonNegativeBoundedInt(name, s, 256));
 
 /* ::
 type Field256DemoProps = {

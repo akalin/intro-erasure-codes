@@ -5,9 +5,11 @@
 'use strict';
 
 /* ::
+import { Field256Element } from './field_256';
+import { Field257Element } from './field_257';
 import { inlineMath } from './inline_math';
 */
-/* global preact, BigInteger, inlineMath */
+/* global preact, BigInteger, Field256Element, Field257Element, inlineMath */
 
 class VChildError extends Error {
   /* ::
@@ -49,6 +51,40 @@ const strictParseInt = (
   return new BigInteger(s, 10);
 };
 
+const parseNonNegativeBoundedInt = (
+  name /* : string */,
+  s /* : string */,
+  bound /* : number */
+) /* : number */ => {
+  const n = strictParseInt(name, s);
+
+  const boundStr = bound.toString();
+  if (n.signum() < 0 || n.compareTo(new BigInteger(boundStr)) >= 0) {
+    throw new VChildError([
+      inlineMath(name),
+      ' must be non-negative and less than ',
+      inlineMath(boundStr),
+      '.',
+    ]);
+  }
+
+  return n.intValue();
+};
+
+// eslint-disable-next-line no-unused-vars
+const parseField256Element = (
+  name /* : string */,
+  s /* : string */
+) /* : Field256Element */ =>
+  new Field256Element(parseNonNegativeBoundedInt(name, s, 256));
+
+// eslint-disable-next-line no-unused-vars
+const parseField257Element = (
+  name /* : string */,
+  s /* : string */
+) /* : Field257Element */ =>
+  new Field257Element(parseNonNegativeBoundedInt(name, s, 257));
+
 // Needed to work around
 // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12263977/
 // .
@@ -64,9 +100,11 @@ const field257Pattern = isEdge
   ? '0*[0-9]{1,3}'
   : '0*(([0-9])|([0-9]{2})|(1[0-9]{2})|(2[0-4][0-9])|(25[0-6]))';
 
+// eslint-disable-next-line no-unused-vars
 const textInput = (
   value /* : string */,
   onChange /* : (string) => void */,
+  size /* : number */,
   pattern /* : string */,
   className /* : ?string */
 ) =>
@@ -74,7 +112,7 @@ const textInput = (
     class: className,
     type: 'text',
     value,
-    size: 12,
+    size,
     pattern,
     onInput: (e /* : Event */) => {
       if (!(e.target instanceof HTMLInputElement)) {
@@ -86,7 +124,8 @@ const textInput = (
 
 const styleNoWrap = { style: { whiteSpace: 'nowrap' } };
 
-const spanNoWrap = (...children) => preact.h('span', styleNoWrap, ...children);
+const spanNoWrap = (...children /* : VChild[] */) =>
+  preact.h('span', styleNoWrap, ...children);
 
 // eslint-disable-next-line no-unused-vars
 const binaryOpInput = (
@@ -96,28 +135,35 @@ const binaryOpInput = (
   onBChange /* : (string) => void */,
   pattern /* : string */,
   inputClass /* : ?string */
-) => [
-  spanNoWrap(
-    inlineMath('a ='),
-    ' ',
-    textInput(aValue, s => onAChange(s), pattern, inputClass)
-  ),
-  ' and ',
-  spanNoWrap(
-    inlineMath('b ='),
-    ' ',
-    textInput(bValue, s => onBChange(s), pattern, inputClass),
-    '.'
-  ),
-];
+) => {
+  const size = 12;
+  return [
+    spanNoWrap(
+      inlineMath('a ='),
+      ' ',
+      textInput(aValue, s => onAChange(s), size, pattern, inputClass)
+    ),
+    ' and ',
+    spanNoWrap(
+      inlineMath('b ='),
+      ' ',
+      textInput(bValue, s => onBChange(s), size, pattern, inputClass),
+      '.'
+    ),
+  ];
+};
 
 /* :: export {
   VChildError,
   handleVChildError,
   strictParseInt,
+  parseField256Element,
+  parseField257Element,
   isEdge,
   field256Pattern,
   field257Pattern,
+  textInput,
   styleNoWrap,
+  spanNoWrap,
   binaryOpInput,
 }; */
