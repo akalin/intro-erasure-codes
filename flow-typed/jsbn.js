@@ -3,6 +3,7 @@ declare class BigInteger {
 
   toString(b: ?number): string;
   negate(): BigInteger;
+  abs(): BigInteger;
   compareTo(a: BigInteger): number;
   bitLength(): number;
 
