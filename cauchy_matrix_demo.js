@@ -346,14 +346,35 @@ class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, Ca
         ]);
       }
 
-      return [
+      const t = [
         'Then, the Cauchy matrix constructed from ',
         inlineMath('x'),
         ' and ',
         inlineMath('y'),
         ' is ',
-        displayMath(`${mStr}\\text{.}`),
       ];
+
+      if (m.rows() === m.columns()) {
+        const mInv /* : typeof m */ = m.inverse();
+        const mInvStr = mInv.toLaTeXString();
+        if (mInvStr.length > matrixStringLengthBound) {
+          throw new VChildError([
+            'The Cauchy matrix constructed from ',
+            inlineMath('x'),
+            ' and ',
+            inlineMath('y'),
+            ' has an inverse which is too big to display.',
+          ]);
+        }
+
+        t.push(displayMath(`${mStr}\\text{,}`));
+        t.push(' which has inverse ');
+        t.push(displayMath(`${mInvStr}\\text{.}`));
+      } else {
+        t.push(displayMath(`${mStr}\\text{.}`));
+      }
+
+      return t;
     });
 
     return preact.h(
