@@ -45,6 +45,14 @@ class Matrix /* :: <T: Field<*>> */ {
     return this._elements[0].one();
   }
 
+  rows() /* : number */ {
+    return this._rows;
+  }
+
+  columns() /* : number */ {
+    return this._columns;
+  }
+
   toLaTeXString() /* : string */ {
     const rowStrs = [];
     for (let i = 0; i < this._rows; i += 1) {
