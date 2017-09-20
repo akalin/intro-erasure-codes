@@ -7,7 +7,7 @@
 /* ::
 import { Field256Element } from './field_256';
 import { Field257Element } from './field_257';
-import { inlineMath } from './inline_math';
+import { inlineMath } from './math';
 */
 /* global preact, BigInteger, Field256Element, Field257Element, inlineMath */
 

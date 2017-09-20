@@ -14,7 +14,7 @@ import {
   textInput,
   spanNoWrap,
 } from './demo_common';
-import { inlineMath } from './inline_math';
+import { inlineMath, displayMath } from './math';
 */
 /*
 global
@@ -29,6 +29,7 @@ global
   spanNoWrap,
 
   inlineMath,
+  displayMath,
 */
 
 const lengthBound = 50;
@@ -144,7 +145,7 @@ class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, Ca
         ' and ',
         inlineMath('y'),
         ' is ',
-        inlineMath(`${m.toLaTeXString()}\\text{.}`),
+        displayMath(`${m.toLaTeXString()}\\text{.}`),
       ];
     });
 

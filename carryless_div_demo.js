@@ -17,7 +17,7 @@ import {
   arithmeticTypeChoice,
 } from './carryless_demo_common';
 import { computeIntermediates } from './carryless_div_demo_util';
-import { inlineMath } from './inline_math';
+import { inlineMath } from './math';
 */
 /*
 global
