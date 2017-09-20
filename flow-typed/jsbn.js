@@ -2,6 +2,7 @@ declare class BigInteger {
   constructor(a?: string, b?: number): BigInteger;
 
   toString(b: ?number): string;
+  negate(): BigInteger;
   compareTo(a: BigInteger): number;
   bitLength(): number;
 
@@ -15,8 +16,10 @@ declare class BigInteger {
   add(a: BigInteger): BigInteger;
   subtract(a: BigInteger): BigInteger;
   multiply(a: BigInteger): BigInteger;
+  divide(a: BigInteger): BigInteger;
   remainder(a: BigInteger): BigInteger;
   divideAndRemainder(a: BigInteger): [ BigInteger, BigInteger ];
+  gcd(a: BigInteger): BigInteger;
 
   static ZERO: BigInteger;
   static ONE: BigInteger;
