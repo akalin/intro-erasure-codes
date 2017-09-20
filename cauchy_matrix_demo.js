@@ -8,6 +8,7 @@
 import { Field } from './field';
 import { Field256Element } from './field_256';
 import { Field257Element } from './field_257';
+import { BigRational } from './rational';
 import { Matrix, newCauchyMatrix } from './matrix';
 import {
   VChildError,
@@ -24,6 +25,9 @@ import { inlineMath, displayMath } from './math';
 /*
 global
   preact,
+  BigInteger,
+
+  BigRational,
 
   newCauchyMatrix,
 
@@ -41,7 +45,7 @@ global
 */
 
 /* ::
-type FieldType = 'gf256' | 'gf257'
+type FieldType = 'gf256' | 'gf257' | 'rational'
 */
 
 const lengthBound = 50;
@@ -73,6 +77,61 @@ const parseField257ElementListCapped = (
   return strs.map((t, i) => parseField257Element(`{${name}}_{${i}}`, t));
 };
 
+const rationalDigitBound = 25;
+
+const parseBigRational = (
+  name /* : string */,
+  s /* : string */
+) /* : BigRational */ => {
+  const match = s.match(/^([+-]?[0-9]+)(?:\s*\/\s*([+-]?[0-9]+))?$/);
+  if (!match) {
+    throw new VChildError([
+      inlineMath(name),
+      ' is not a valid rational number.',
+    ]);
+  }
+
+  const n = new BigInteger(match[1], 10);
+
+  if (n.abs().toString(10).length > rationalDigitBound) {
+    throw new VChildError([
+      'The numerator of ',
+      inlineMath(name),
+      ' has too big an absolute value.',
+    ]);
+  }
+
+  let d;
+  if (match[2]) {
+    d = new BigInteger(match[2], 10);
+    if (d.signum() === 0) {
+      throw new VChildError([
+        inlineMath(name),
+        ' cannot have a zero denominator.',
+      ]);
+    }
+    if (d.abs().toString(10).length > rationalDigitBound) {
+      throw new VChildError([
+        'The denominator of ',
+        inlineMath(name),
+        ' has too big an absolute value.',
+      ]);
+    }
+  } else {
+    d = BigInteger.ONE;
+  }
+
+  return new BigRational(n, d);
+};
+
+const parseBigRationalListCapped = (
+  name /* : string */,
+  s /* : string */
+) /* : BigRational[] */ => {
+  const strs = parseListCapped(name, s);
+  return strs.map((t, i) => parseBigRational(`{${name}}_{${i}}`, t));
+};
+
 const checkForDuplicates = /* :: <T: Field<*>> */ (
   x /* : T[] */,
   y /* : T[] */
@@ -98,7 +157,7 @@ const parseCauchyMatrix = (
   fieldType /* : FieldType */,
   xStr /* : string */,
   yStr /* : string */
-) /* : Matrix<Field256Element> | Matrix<Field257Element> */ => {
+) /* : Matrix<Field256Element> | Matrix<Field257Element> | Matrix<BigRational> */ => {
   // Duplicate some code below to work around limitations of flow's
   // type system.
   switch (fieldType) {
@@ -112,6 +171,13 @@ const parseCauchyMatrix = (
     case 'gf257': {
       const x = parseField257ElementListCapped('x', xStr);
       const y = parseField257ElementListCapped('y', yStr);
+      checkForDuplicates(x, y);
+      return newCauchyMatrix(x, y);
+    }
+
+    case 'rational': {
+      const x = parseBigRationalListCapped('x', xStr);
+      const y = parseBigRationalListCapped('y', yStr);
       checkForDuplicates(x, y);
       return newCauchyMatrix(x, y);
     }
@@ -177,7 +243,9 @@ const fieldTypeChoice = (
   return [
     choiceRadio('gf256', ' field with 256 elements'),
     ' ',
-    choiceRadio('gf257', ` field with 257 elements${trailer}`),
+    choiceRadio('gf257', ' field with 257 elements'),
+    ' ',
+    choiceRadio('rational', ` field of rational numbers${trailer}`),
   ];
 };
 
@@ -195,6 +263,8 @@ type CauchyMatrixDemoState = {
   fieldType: FieldType,
 };
 */
+
+const matrixStringLengthBound = 10 * 1024;
 
 // eslint-disable-next-line no-unused-vars
 class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, CauchyMatrixDemoState> */ {
@@ -236,13 +306,24 @@ class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, Ca
   ) {
     const children = handleVChildError(() => {
       const m = parseCauchyMatrix(state.fieldType, state.x, state.y);
+      const mStr = m.toLaTeXString();
+      if (mStr.length > matrixStringLengthBound) {
+        throw new VChildError([
+          'The Cauchy matrix constructed from ',
+          inlineMath('x'),
+          ' and ',
+          inlineMath('y'),
+          ' is too big to display.',
+        ]);
+      }
+
       return [
-        ' Then, the Cauchy matrix constructed from ',
+        'Then, the Cauchy matrix constructed from ',
         inlineMath('x'),
         ' and ',
         inlineMath('y'),
         ' is ',
-        displayMath(`${m.toLaTeXString()}\\text{.}`),
+        displayMath(`${mStr}\\text{.}`),
       ];
     });
 

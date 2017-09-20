@@ -22,6 +22,7 @@
     <script src="field_257.js"></script>
     <script src="carryless.js"></script>
     <script src="field_256.js"></script>
+    <script src="rational.js"></script>
     <script src="matrix.js"></script>
     <script src="demo_common.js"></script>
     <script src="cauchy_matrix_demo.js"></script>
@@ -59,7 +60,7 @@
       const { h, render } = window.preact;
       const root = document.getElementById('cauchyMatrixDemo');
       render(h(CauchyMatrixDemo, {
-        initialX: '3, 4, 5', initialY: '0, 1, 2', initialFieldType: 'gf257',
+        initialX: '3, 4, 5', initialY: '0, 1, 2', initialFieldType: 'rational',
         name: 'cauchyMatrixDemo',
         header: h('h3', null, 'Interactive Example 1: Cauchy matrices'),
       }), root.parent, root);
