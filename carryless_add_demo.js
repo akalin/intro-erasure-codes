@@ -16,7 +16,7 @@ import {
   addOpStr,
   arithmeticTypeChoice,
 } from './carryless_demo_common';
-import { inlineMath } from './inline_math';
+import { inlineMath } from './math';
 */
 /*
 global

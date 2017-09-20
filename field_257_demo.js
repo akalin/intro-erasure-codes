@@ -12,7 +12,7 @@ import {
   field257Pattern,
   binaryOpInput,
 } from './demo_common';
-import { inlineMath } from './inline_math';
+import { inlineMath } from './math';
 */
 /*
 global

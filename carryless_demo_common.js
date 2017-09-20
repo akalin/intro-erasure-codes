@@ -6,7 +6,7 @@
 
 /* ::
 import { strictParseInt, VChildError, styleNoWrap } from './demo_common';
-import { inlineMath } from './inline_math';
+import { inlineMath } from './math';
 */
 /* global preact, strictParseInt, VChildError, styleNoWrap, inlineMath */
 
