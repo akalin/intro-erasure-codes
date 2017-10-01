@@ -15,7 +15,7 @@ import {
   impossible,
   spanNoWrap,
 } from './demo_common';
-import { SingularMatrixError, Matrix } from './matrix';
+import { Matrix } from './matrix';
 import {
   type FieldType,
   fieldTypeChoice,
@@ -25,6 +25,11 @@ import {
   listInput,
   matrixStringLengthBound,
 } from './matrix_demo_common';
+import {
+  type RowReduceState,
+  rowReduceInitialState,
+  rowReduceNextState,
+} from './row_reduce';
 import { inlineMath, displayMath } from './math';
 */
 /*
@@ -36,7 +41,6 @@ global
   impossible,
   spanNoWrap,
 
-  SingularMatrixError,
   Matrix,
 
   fieldTypeChoice,
@@ -46,6 +50,9 @@ global
 
   listInput,
   matrixStringLengthBound,
+
+  rowReduceInitialState,
+  rowReduceNextState,
 
   inlineMath,
   displayMath,
@@ -140,96 +147,249 @@ ${elementStr}
 };
 
 /* ::
-type RowReduceState<T : Field<*>> = {
-  aLeft: Matrix<T>,
-  aRight: Matrix<T>,
-};
-*/
-
-const newState = /* :: <T: Field<*>> */ (
-  m /* : Matrix<T> */
-) /* : RowReduceState<T> */ => {
-  const rows = m.rows();
-  const columns = m.columns();
-
-  if (rows !== columns) {
-    throw new Error('Non-square matrix');
-  }
-
-  const aRight = new Matrix(
-    rows,
-    rows,
-    (i, j) => (i === j ? m.oneElement() : m.zeroElement())
-  );
-  return { aLeft: m, aRight };
-};
-
-/* ::
 type RowReduceProps = {
   m: Matrix<*>,
 };
 
-type RowReduceComponentState = RowReduceState<*>;
+type RowReduceComponentState = {
+  i: number;
+  currState: RowReduceState<*>;
+};
 */
 
 // eslint-disable-next-line no-unused-vars
 class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceComponentState> */ {
   constructor({ m } /* : RowReduceProps */) {
     super({ m });
-    this.state = newState(m);
+    this.state = { i: 0, currState: rowReduceInitialState(m) };
   }
 
-  shouldComponentUpdate({ m: nextM } /* : RowReduceProps */) {
-    return !this.props.m.equals(nextM);
+  shouldComponentUpdate(
+    { m: nextM } /* : RowReduceProps */,
+    nextState /* : RowReduceComponentState */
+  ) {
+    if (!this.props.m.equals(nextM)) {
+      return true;
+    }
+
+    if (this.state.i !== nextState.i) {
+      return true;
+    }
+
+    return false;
   }
 
-  componentWillReceiveProps({ m } /* : RowReduceProps */) {
-    this.setState(newState(m));
+  componentWillReceiveProps({ m: nextM } /* : RowReduceProps */) {
+    if (this.props.m.equals(nextM)) {
+      return;
+    }
+
+    this.setState({ i: 0, currState: rowReduceInitialState(nextM) });
+  }
+
+  onNextStep() {
+    this.setState(state => ({
+      i: state.i + 1,
+      currState: rowReduceNextState(state.currState),
+    }));
   }
 
   render(props /* : RowReduceProps */, state /* : RowReduceComponentState */) {
-    let mInv;
-    try {
-      mInv = props.m.inverse();
-    } catch (e) {
-      if (!(e instanceof SingularMatrixError)) {
-        throw e;
+    const { h } = preact;
+
+    const { currState } = state;
+
+    let children;
+    switch (currState.type) {
+      case 'initial': {
+        const { aLeft, aRight } = currState;
+
+        children = ['The initial augmented matrix ', inlineMath('A'), ' is '];
+
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        if (aStr.length > matrixStringLengthBound) {
+          children.push(' too big to display.');
+        } else {
+          children.push(displayMath(`${aStr}\\text{.}`));
+        }
+        break;
       }
-    }
 
-    const aStr = augmentedMatrixLaTeXString(state.aLeft, state.aRight);
-    const aElements = [
-      'The initial augmented matrix ',
-      inlineMath('A'),
-      ' is ',
-    ];
-    if (aStr.length > matrixStringLengthBound) {
-      aElements.push(' too big to display.');
-    } else {
-      aElements.push(displayMath(`${aStr}\\text{.}`));
-    }
+      case 'swap': {
+        const { aLeftPrev, aRightPrev, aLeft, aRight, rowA, rowB } = currState;
 
-    let mInvElements = [' Also,'];
-    if (mInv) {
-      const mInvStr = mInv.toLaTeXString();
-      if (mInvStr.length > matrixStringLengthBound) {
-        mInvElements = mInvElements.concat(
-          ' ',
-          inlineMath('M^{-1}'),
-          ' exists, but is too big to display.'
+        children = ['Swap rows ', inlineMath(rowA.toString()), ' and '];
+
+        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        if (
+          aStrPrev.length > matrixStringLengthBound ||
+          aStr.length > matrixStringLengthBound
+        ) {
+          children = children.concat(
+            inlineMath(`${rowB.toString()}\\text{.}`),
+            ' (Matrices too big to display.)'
+          );
+        } else {
+          children = children.concat(
+            inlineMath(`${rowB.toString()}\\text{:}`),
+            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
+          );
+        }
+        break;
+      }
+
+      case 'singular': {
+        const { aLeft, aRight } = currState;
+
+        children = ['The current value of ', inlineMath('A'), ' is '];
+
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        if (aStr.length > matrixStringLengthBound) {
+          children = children.concat(
+            'too big to display, but its current value implies that ',
+            inlineMath('M'),
+            ' is not invertible.'
+          );
+        } else {
+          children = [
+            displayMath(`${aStr}\\text{.}`),
+            'Since the left side of ',
+            inlineMath('A'),
+            ' has a column where the children on and below the diagonal are all zero, it cannot be transformed to the identity matrix, and thus ',
+            inlineMath('M'),
+            ' is not invertible.',
+          ];
+        }
+        break;
+      }
+
+      case 'divide': {
+        const {
+          aLeftPrev,
+          aRightPrev,
+          aLeft,
+          aRight,
+          row,
+          divisor,
+        } = currState;
+
+        children = ['Divide row ', inlineMath(row.toString()), ' by '];
+
+        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        if (
+          aStrPrev.length > matrixStringLengthBound ||
+          aStr.length > matrixStringLengthBound
+        ) {
+          children = children.concat(
+            inlineMath(`${divisor.toString()}\\text{.}`),
+            ' (Matrices too big to display.)'
+          );
+        } else {
+          children = children.concat(
+            inlineMath(`${divisor.toString()}\\text{:}`),
+            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
+          );
+        }
+        break;
+      }
+
+      case 'subtractScaled': {
+        const {
+          aLeftPrev,
+          aRightPrev,
+          aLeft,
+          aRight,
+          rowSrc,
+          rowDest,
+          scale,
+        } = currState;
+
+        children = ['Subtract row ', inlineMath(rowSrc.toString())];
+
+        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+
+        const tooBig =
+          aStrPrev.length > matrixStringLengthBound ||
+          aStr.length > matrixStringLengthBound;
+
+        const trailer = tooBig ? '.' : ':';
+
+        if (scale) {
+          children = children.concat(
+            ' scaled by ',
+            inlineMath(scale.toString())
+          );
+        }
+
+        children = children.concat(
+          ' from row ',
+          inlineMath(`${rowDest.toString()}\\text{${trailer}}`)
         );
-      } else {
-        mInvElements.push(displayMath(`M^{-1} = ${mInvStr}\\text{.}`));
+
+        if (tooBig) {
+          children.push(' (Matrices too big to display.)');
+        } else {
+          children.push(
+            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
+          );
+        }
+        break;
       }
-    } else {
-      mInvElements = [
-        ' ',
-        inlineMath('M'),
-        ' is singular, and thus has no inverse.',
-      ];
+
+      case 'inverseFound': {
+        const { aLeft, aRight } = currState;
+
+        children = ['The current value of ', inlineMath('A'), ' is '];
+
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const mInvStr = aRight.toLaTeXString();
+        if (mInvStr.length > matrixStringLengthBound) {
+          children = children.concat(
+            'too big to display, but since its left side is the identity matrix, its right side is ',
+            inlineMath('M^{-1}\\text{,}'),
+            ' which is also too big to display.'
+          );
+        } else {
+          if (aStr.length > matrixStringLengthBound) {
+            children = children.concat(
+              ' too big to display, but since its left side is the identity matrix, its right side'
+            );
+          } else {
+            children = children.concat(
+              displayMath(`${aStr}\\text{.}`),
+              'Since the left side of ',
+              inlineMath('A'),
+              ' is the identity matrix, the right side of ',
+              inlineMath('A')
+            );
+          }
+
+          children = children.concat(
+            ' is ',
+            inlineMath('M^{-1}'),
+            '. Therefore,',
+            displayMath(`M^{-1} = ${mInvStr}\\text{.}`)
+          );
+        }
+        break;
+      }
+
+      default:
+        impossible(currState.type);
     }
 
-    return preact.h('div', {}, [aElements, mInvElements]);
+    const nextDisabled =
+      currState.type === 'singular' || currState.type === 'inverseFound';
+    const nextButton = h(
+      'button',
+      { disabled: nextDisabled, onClick: () => this.onNextStep() },
+      'Next step'
+    );
+
+    return h('div', {}, children, h('div', {}, nextButton));
   }
 }
 

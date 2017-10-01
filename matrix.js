@@ -202,6 +202,32 @@ ${elementStr}
     }
   }
 
+  _clone() /* : Matrix<T> */ {
+    return new Matrix(this._rows, this._columns, this._elements);
+  }
+
+  swapRows(i /* : number */, j /* : number */) /* : Matrix<T> */ {
+    const ret = this._clone();
+    ret._swapRows(i, j);
+    return ret;
+  }
+
+  divideRow(i /* : number */, c /* : T */) /* : Matrix<T> */ {
+    const ret = this._clone();
+    ret._divideRow(i, c);
+    return ret;
+  }
+
+  subtractScaledRow(
+    dest /* : number */,
+    src /* : number */,
+    c /* : T */
+  ) /* : Matrix<T> */ {
+    const ret = this._clone();
+    ret._subtractScaledRow(dest, src, c);
+    return ret;
+  }
+
   inverse() /* : Matrix<T> */ {
     if (this._rows !== this._columns) {
       throw new Error('Cannot invert non-square matrix');
@@ -216,7 +242,7 @@ ${elementStr}
       (i, j) => (i === j ? one : zero)
     );
 
-    const clone = new Matrix(this._rows, this._columns, this._elements);
+    const clone = this._clone();
     clone._rowReduceForInverse(mInv);
     return mInv;
   }
