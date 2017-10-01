@@ -5,6 +5,17 @@
 /* :: import { type Field } from './field'; */
 
 // eslint-disable-next-line no-unused-vars
+class SingularMatrixError extends Error {
+  // flowlint-next-line unclear-type:off
+  constructor(...params /* : any[] */) {
+    super('Singular matrix', ...params);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, SingularMatrixError);
+    }
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
 class Matrix /* :: <T: Field<*>> */ {
   /* ::
   _rows: number;
@@ -141,7 +152,7 @@ ${elementStr}
       }
 
       if (pivot.equals(zero)) {
-        throw new Error('Singular matrix');
+        throw new SingularMatrixError();
       }
 
       this._divideRow(i, pivot);
@@ -197,5 +208,5 @@ const newCauchyMatrix = /* :: <T: Field<*>> */ (
   );
 
 /* ::
-export { Matrix, newCauchyMatrix };
+export { SingularMatrixError, Matrix, newCauchyMatrix };
 */
