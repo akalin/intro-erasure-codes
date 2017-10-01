@@ -80,6 +80,30 @@ ${elementStr}
 \\end{pmatrix}`;
   }
 
+  equals(n /* : Matrix<T> */) /* : boolean */ {
+    if (this._rows !== n._rows) {
+      return false;
+    }
+
+    if (this._columns !== n._columns) {
+      return false;
+    }
+
+    if (this._elements.length !== n._elements.length) {
+      throw new Error(
+        'Matrices with matching dimensions but mismatched element count'
+      );
+    }
+
+    for (let i = 0; i < this._elements.length; i += 1) {
+      if (!this._elements[i].equals(n._elements[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   at(i /* : number */, j /* : number */) /* : T */ {
     if (i < 0 || i >= this._rows) {
       throw new RangeError('Row index out of bounds');
