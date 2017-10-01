@@ -98,8 +98,142 @@ const parseSquareMatrix = (
   }
 };
 
-/* ::
+const augmentedMatrixLaTeXString = /* :: <T: Field<*>> */ (
+  aLeft /* : Matrix<T> */,
+  aRight /* : Matrix<T> */
+) /* : string */ => {
+  if (aLeft.rows() !== aRight.rows()) {
+    throw new Error('Row count mismatch');
+  }
 
+  // TODO: Use an array environment with {cc...cc|cc...cc} when the
+  // bug with midlines disappearing gets fixed. Better yet, use a
+  // pmatrix environment with [cc...cc|cc...cc] when that gets
+  // supported by KaTeX.
+
+  const rowStrs = [];
+  for (let i = 0; i < aLeft.rows(); i += 1) {
+    const elemStrs = [];
+    for (let j = 0; j < aLeft.columns(); j += 1) {
+      elemStrs.push(aLeft.at(i, j).toString());
+    }
+    for (let j = 0; j < aRight.columns(); j += 1) {
+      elemStrs.push(aRight.at(i, j).toString());
+    }
+    const rowStr = elemStrs.join(' & ');
+    rowStrs.push(rowStr);
+  }
+  const elementStr = rowStrs.join(' \\\\\n');
+
+  // Build the augmented matrix KaTeX string as described in
+  // https://github.com/Khan/KaTeX/issues/971 .
+
+  const arrayColSep = '5pt';
+  const leftColStr = 'c'.repeat(aLeft.columns());
+  const rightColStr = 'c'.repeat(aRight.columns());
+
+  return `\\left( \\hskip -${arrayColSep}
+\\begin{array}{${leftColStr}|${rightColStr}}
+${elementStr}
+\\end{array}
+\\hskip -${arrayColSep} \\right)`;
+};
+
+/* ::
+type RowReduceState<T : Field<*>> = {
+  aLeft: Matrix<T>,
+  aRight: Matrix<T>,
+};
+*/
+
+const newState = /* :: <T: Field<*>> */ (
+  m /* : Matrix<T> */
+) /* : RowReduceState<T> */ => {
+  const rows = m.rows();
+  const columns = m.columns();
+
+  if (rows !== columns) {
+    throw new Error('Non-square matrix');
+  }
+
+  const aRight = new Matrix(
+    rows,
+    rows,
+    (i, j) => (i === j ? m.oneElement() : m.zeroElement())
+  );
+  return { aLeft: m, aRight };
+};
+
+/* ::
+type RowReduceProps = {
+  m: Matrix<*>,
+};
+
+type RowReduceComponentState = RowReduceState<*>;
+*/
+
+// eslint-disable-next-line no-unused-vars
+class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceComponentState> */ {
+  constructor({ m } /* : RowReduceProps */) {
+    super({ m });
+    this.state = newState(m);
+  }
+
+  shouldComponentUpdate({ m: nextM } /* : RowReduceProps */) {
+    return !this.props.m.equals(nextM);
+  }
+
+  componentWillReceiveProps({ m } /* : RowReduceProps */) {
+    this.setState(newState(m));
+  }
+
+  render(props /* : RowReduceProps */, state /* : RowReduceComponentState */) {
+    let mInv;
+    try {
+      mInv = props.m.inverse();
+    } catch (e) {
+      if (!(e instanceof SingularMatrixError)) {
+        throw e;
+      }
+    }
+
+    const aStr = augmentedMatrixLaTeXString(state.aLeft, state.aRight);
+    const aElements = [
+      'The initial augmented matrix ',
+      inlineMath('A'),
+      ' is ',
+    ];
+    if (aStr.length > matrixStringLengthBound) {
+      aElements.push(' too big to display.');
+    } else {
+      aElements.push(displayMath(`${aStr}\\text{.}`));
+    }
+
+    let mInvElements = [' Also,'];
+    if (mInv) {
+      const mInvStr = mInv.toLaTeXString();
+      if (mInvStr.length > matrixStringLengthBound) {
+        mInvElements = mInvElements.concat(
+          ' ',
+          inlineMath('M^{-1}'),
+          ' exists, but is too big to display.'
+        );
+      } else {
+        mInvElements.push(displayMath(`M^{-1} = ${mInvStr}\\text{.}`));
+      }
+    } else {
+      mInvElements = [
+        ' ',
+        inlineMath('M'),
+        ' is singular, and thus has no inverse.',
+      ];
+    }
+
+    return preact.h('div', {}, [aElements, mInvElements]);
+  }
+}
+
+/* ::
 type MatrixInverseDemoProps = {
   name: string,
   header?: HTMLElement,
@@ -144,6 +278,8 @@ class MatrixInverseDemo extends preact.Component /* :: <MatrixInverseDemoProps, 
     props /* : MatrixInverseDemoProps */,
     state /* : MatrixInverseDemoState */
   ) {
+    const { h } = preact;
+
     const children = handleVChildError(() => {
       const m = parseSquareMatrix(state.fieldType, state.elements);
       const mStr = m.toLaTeXString();
@@ -154,43 +290,17 @@ class MatrixInverseDemo extends preact.Component /* :: <MatrixInverseDemoProps, 
         ]);
       }
 
-      const t = [
+      return [
         'Then, let ',
         inlineMath('M = \\mathtt{SquareMatrix}(m)\\text{,}'),
         ' so ',
         displayMath(`M = ${mStr}\\text{.}`),
+        h(RowReduce, { m }),
       ];
-
-      let mInv;
-      try {
-        mInv = m.inverse();
-      } catch (e) {
-        if (!(e instanceof SingularMatrixError)) {
-          throw e;
-        }
-      }
-
-      if (mInv) {
-        const mInvStr = mInv.toLaTeXString();
-        if (mInvStr.length > matrixStringLengthBound) {
-          throw new VChildError([
-            inlineMath('\\mathtt{SquareMatrix}(m)^{-1}'),
-            ' is too big to display.',
-          ]);
-        }
-        t.push(' Also, ');
-        t.push(displayMath(`M^{-1} = ${mInvStr}\\text{.}`));
-      } else {
-        t.push(' ');
-        t.push(inlineMath('M'));
-        t.push(' is singular, and thus has no inverse.');
-      }
-
-      return t;
     });
 
     const inputSize = 30;
-    return preact.h(
+    return h(
       'div',
       { class: props.containerClass },
       props.header,
