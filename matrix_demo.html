@@ -25,7 +25,9 @@
     <script src="rational.js"></script>
     <script src="matrix.js"></script>
     <script src="demo_common.js"></script>
+    <script src="matrix_demo_common.js"></script>
     <script src="cauchy_matrix_demo.js"></script>
+    <script src="matrix_inverse_demo.js"></script>
 
     <style>
     input:invalid { color: red; }
@@ -153,5 +155,20 @@ M^{-1} = |  3/2  -2   1  |
          \  -1    2  -1  /.</pre>
 
     </div>
+
+    <div id="matrixInverseDemo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('matrixInverseDemo');
+      render(h(MatrixInverseDemo, {
+        initialElements: '0, 2, 2, 3, 4, 5, 6, 6, 7', initialFieldType: 'rational',
+        name: 'matrixInverseDemo',
+        header: h('h3', null, 'Interactive Example 2: Matrix inversion via row reduction'),
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>
