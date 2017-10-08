@@ -100,5 +100,64 @@
       }), root.parent, root);
     })();
     </script>
+
+    <div>
+      <h3>Example 2: Field with 256 elements</h3>
+      Denote operations on the field with 256
+      elements by a <sub>256</sub> subscript, and let
+      <span style="white-space: nowrap;">
+        <var>a</var> = 23
+      </span>
+      and
+      <span style="white-space: nowrap;">
+        <var>b</var> = 54.
+      </span>
+      Then
+      <ul>
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &oplus;<sub>256</sub> <var>b</var> = 23 &oplus; 54 = <span style="color: red;">33</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            &ominus;<sub>256</sub><var>b</var> = <var>b</var> = <span style="color: red;">54</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &ominus;<sub>256</sub> <var>b</var> = <var>a</var> &oplus;<sub>256</sub> &ominus;<sub>256</sub><var>b</var> = <var>a</var> &oplus;<sub>256</sub> <var>b</var> = <span style="color: red;">33</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &otimes;<sub>256</sub> <var>b</var> = (23 &otimes; 54) clmod 283 = <span style="color: red;">207</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            54 &otimes;<sub>256</sub> 102 = 1,
+          </span>
+          so
+          <span style="white-space: nowrap;">
+            <var>b</var><sup>-1</sup><sub>256</sub> = <span style="color: red;">102</span>;
+          </span>
+        </li>
+
+        <li>
+          <span style="white-space: nowrap;">
+            <var>a</var> &oslash;<sub>256</sub> <var>b</var> = <var>a</var> &otimes;<sub>256</sub> <var>b</var><sup>-1</sup><sub>256</sub> = (23 &otimes; 102) clmod 283 = <span style="color: red;">19</span>,
+          </span>
+          and indeed
+          <span style="white-space: nowrap;">
+            <var>b</var> &otimes;<sub>256</sub> (<var>a</var> &oslash;<sub>256</sub> <var>b</var>) = (54 &times; 19) clmod 283 = 23 = <var>a</var>.
+          </span>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>
