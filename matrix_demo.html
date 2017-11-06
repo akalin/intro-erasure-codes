@@ -66,5 +66,83 @@
       }), root.parent, root);
     })();
     </script>
+
+    <!-- TODO: Add colors. -->
+
+    <div>
+      <h3>Example 2: Matrix inversion via row reduction</h3>
+      Working over the field of rational numbers, let
+
+      <pre>    / 0 2 2 \
+M = | 3 4 5 |
+    \ 6 6 7 /.</pre>
+
+      The initial augmented matrix <var>A</var> is
+
+      <pre>/ 0 2 2 | 1 0 0 \
+| 3 4 5 | 0 1 0 |
+\ 6 6 7 | 0 0 1 /.</pre>
+
+      We need <var>A</var><sub>00</sub> to be non-zero, so swap rows 0 and 1:
+
+      <pre>/ 0 2 2 | 1 0 0 \     / 3 4 5 | 0 1 0 \
+| 3 4 5 | 0 1 0 | --> | 0 2 2 | 1 0 0 |
+\ 6 6 7 | 0 0 1 /     \ 6 6 7 | 0 0 1 /.</pre>
+
+      We need <var>A</var><sub>00</sub> to be 1, so divide row 0 by 3:
+
+      <pre>/ 3 4 5 | 0 1 0 \     / 1 4/3 5/3 | 0 1/3 0 \
+| 0 2 2 | 1 0 0 | --> | 0  2   2  | 1  0  0 |
+\ 6 6 7 | 0 0 1 /     \ 6  6   7  | 0  0  1 /.</pre>
+
+      We need <var>A</var><sub>20</sub> to be 0, so subtract row 0 scaled by 6 from row 2:
+
+      <pre>/ 1 4/3 5/3 | 0 1/3 0 \     / 1 4/3 5/3 | 0 1/3 0 \
+| 0  2   2  | 1  0  0 | --> | 0  2   2  | 1  0  0 |
+\ 6  6   7  | 0  0  1 /     \ 0 -2  -3  | 0 -2  1 /.</pre>
+
+      We need <var>A</var><sub>11</sub> to be 1, so divide row 1 by 2:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
+| 0  2   2  |  1   0  0 | --> | 0  1   1  | 1/2  0  0 |
+\ 0 -2  -3  |  0  -2  1 /     \ 0 -2  -3  |  0  -2  1 /.</pre>
+
+      We need <var>A</var><sub>21</sub> to be 0, so subtract row 1 scaled by &minus;2 from row 2:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
+| 0  1   1  | 1/2  0  0 | --> | 0  1   1  | 1/2  0  0 |
+\ 0 -2  -3  |  0  -2  1 /     \ 0  0  -1  |  1  -2  1 /.</pre>
+
+      We need <var>A</var><sub>22</sub> to be 1, so divide row 2 by &minus;1, which makes the left side of <var>A</var> a unit upper triangular matrix:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
+| 0  1   1  | 1/2  0  0 | --> | 0  1   1  | 1/2  0  0 |
+\ 0  0  -1  |  1  -2  1 /     \ 0  0   1  | -1   2 -1 /.</pre>
+
+      We need <var>A</var><sub>12</sub> to be 0, so subtract row 2 from row 1:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
+| 0  1   1  | 1/2  0  0 | --> | 0  1   0  | 3/2 -2  1 |
+\ 0  0   1  | -1   2 -1 /     \ 0  0   1  | -1   2 -1 /.</pre>
+
+      We need <var>A</var><sub>02</sub> to be 0, so subtract row 2 scaled by 5/3 from row 0:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3  0  | 5/3 -3 5/3 \
+| 0  1   0  | 3/2 -2  1 | --> | 0  1   0  | 3/2 -2  1  |
+\ 0  0   1  | -1   2 -1 /     \ 0  0   1  | -1   2 -1  /.</pre>
+
+      We need <var>A</var><sub>01</sub> to be 0, so subtract row 1 scaled by 4/3 from row 0, which makes the left side of <var>A</var> the identity matrix:
+
+      <pre>/ 1 4/3  0  | 5/3  -3 5/3 \     / 1  0   0  | -1/3 -1/3 1/3 \
+| 0  1   0  | 3/2 -2   1  | --> | 0  1   0  |  3/2  -2   1  |
+\ 0  0   1  | -1   2  -1  /     \ 0  0   1  |  -1    2  -1  /.</pre>
+
+      Since the left side of <var>A</var> is the identity matrix, the right side of <var>A</var> is <var>M</var><sup>-1</sup>. Therefore,
+
+      <pre>         / -1/3 -1/3 1/3 \
+M^{-1} = |  3/2  -2   1  |
+         \  -1    2  -1  /.</pre>
+
+    </div>
   </body>
 </html>
