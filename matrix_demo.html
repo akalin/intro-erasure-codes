@@ -67,7 +67,15 @@
     })();
     </script>
 
-    <!-- TODO: Add colors. -->
+    <style>
+    .swap-row-a { color: red; }
+    .swap-row-b { color: blue; }
+
+    .divide-row { color: red; }
+
+    .subtract-scaled-row-src { color: blue; }
+    .subtract-scaled-row-dest { color: red; }
+    </style>
 
     <div>
       <h3>Example 2: Matrix inversion via row reduction</h3>
@@ -83,58 +91,59 @@ M = | 3 4 5 |
 | 3 4 5 | 0 1 0 |
 \ 6 6 7 | 0 0 1 /.</pre>
 
-      We need <var>A</var><sub>00</sub> to be non-zero, so swap rows 0 and 1:
+      We need <var>A</var><sub>00</sub> to be non-zero, so swap rows <span class="swap-row-a">0</span> and <span class="swap-row-b">1</span>:
 
-      <pre>/ 0 2 2 | 1 0 0 \     / 3 4 5 | 0 1 0 \
-| 3 4 5 | 0 1 0 | --> | 0 2 2 | 1 0 0 |
+      <pre>/ <span class="swap-row-a">0 2 2</span> | <span class="swap-row-a">1 0 0</span> \     / <span class="swap-row-b">3 4 5</span> | <span class="swap-row-b">0 1 0</span> \
+| <span class="swap-row-b">3 4 5</span> | <span class="swap-row-b">0 1 0</span> | --> | <span class="swap-row-a">0 2 2</span> | <span class="swap-row-a">1 0 0</span> |
 \ 6 6 7 | 0 0 1 /     \ 6 6 7 | 0 0 1 /.</pre>
 
-      We need <var>A</var><sub>00</sub> to be 1, so divide row 0 by 3:
+      We need <var>A</var><sub>00</sub> to be 1, so divide row <span class="divide-row">0</span> by 3:
 
-      <pre>/ 3 4 5 | 0 1 0 \     / 1 4/3 5/3 | 0 1/3 0 \
+      <pre>/ <span class="divide-row">3 4 5</span> | <span class="divide-row">0 1 0</span> \     / <span class="divide-row">1 4/3 5/3</span> | <span class="divide-row">0 1/3 0</span> \
 | 0 2 2 | 1 0 0 | --> | 0  2   2  | 1  0  0 |
 \ 6 6 7 | 0 0 1 /     \ 6  6   7  | 0  0  1 /.</pre>
 
-      We need <var>A</var><sub>20</sub> to be 0, so subtract row 0 scaled by 6 from row 2:
+      We need <var>A</var><sub>20</sub> to be 0, so subtract row <span class="subtract-scaled-row-src">0</span> scaled by 6 from row <span class="subtract-scaled-row-dest">2</span>:
 
-      <pre>/ 1 4/3 5/3 | 0 1/3 0 \     / 1 4/3 5/3 | 0 1/3 0 \
+      <pre>/ <span class="subtract-scaled-row-src">1 4/3 5/3</span> | <span class="subtract-scaled-row-src">0 1/3 0</span> \     / 1 4/3 5/3 | 0 1/3 0 \
 | 0  2   2  | 1  0  0 | --> | 0  2   2  | 1  0  0 |
-\ 6  6   7  | 0  0  1 /     \ 0 -2  -3  | 0 -2  1 /.</pre>
+\ <span class="subtract-scaled-row-dest">6  6   7</span>  | <span class="subtract-scaled-row-dest">0  0  1</span> /     \ <span class="subtract-scaled-row-dest">0 -2  -3</span>  | <span class="subtract-scaled-row-dest">0 -2  1</span> /.</pre>
 
-      We need <var>A</var><sub>11</sub> to be 1, so divide row 1 by 2:
+      We need <var>A</var><sub>11</sub> to be 1, so divide row <span class="divide-row">1</span> by 2:
 
       <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
-| 0  2   2  |  1   0  0 | --> | 0  1   1  | 1/2  0  0 |
+| <span class="divide-row">0  2   2 </span> | <span class="divide-row"> 1   0  0</span> | --> | <span class="divide-row">0  1   1 </span> | <span class="divide-row">1/2  0  0</span> |
 \ 0 -2  -3  |  0  -2  1 /     \ 0 -2  -3  |  0  -2  1 /.</pre>
 
-      We need <var>A</var><sub>21</sub> to be 0, so subtract row 1 scaled by &minus;2 from row 2:
+      We need <var>A</var><sub>21</sub> to be 0, so subtract row <span class="subtract-scaled-row-src">1</span> scaled by &minus;2 from row <span class="subtract-scaled-row-dest">2</span>:
+
+      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
+| <span class="subtract-scaled-row-src">0  1   1</span>  | <span class="subtract-scaled-row-src">1/2  0  0</span> | --> | 0  1   1  | 1/2  0  0 |
+\ <span class="subtract-scaled-row-dest">0 -2  -3</span>  |  <span class="subtract-scaled-row-dest">0  -2  1</span> /     \ <span class="subtract-scaled-row-dest">0  0  -1</span>  |  <span class="subtract-scaled-row-dest">1  -2  1</span> /.</pre>
+
+      We need <var>A</var><sub>22</sub> to be 1, so divide row <span class="divide-row">2</span> by &minus;1, which makes the left side of <var>A</var> a
+      unit upper triangular matrix:
 
       <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
 | 0  1   1  | 1/2  0  0 | --> | 0  1   1  | 1/2  0  0 |
-\ 0 -2  -3  |  0  -2  1 /     \ 0  0  -1  |  1  -2  1 /.</pre>
+\ <span class="divide-row">0  0  -1 </span> | <span class="divide-row"> 1  -2  1</span> /     \ <span class="divide-row">0  0   1 </span> | <span class="divide-row">-1   2 -1</span> /.</pre>
 
-      We need <var>A</var><sub>22</sub> to be 1, so divide row 2 by &minus;1, which makes the left side of <var>A</var> a unit upper triangular matrix:
-
-      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
-| 0  1   1  | 1/2  0  0 | --> | 0  1   1  | 1/2  0  0 |
-\ 0  0  -1  |  1  -2  1 /     \ 0  0   1  | -1   2 -1 /.</pre>
-
-      We need <var>A</var><sub>12</sub> to be 0, so subtract row 2 from row 1:
+      We need <var>A</var><sub>12</sub> to be 0, so subtract row <span class="subtract-scaled-row-src">2</span> from row <span class="subtract-scaled-row-dest">1</span>:
 
       <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3 5/3 |  0  1/3 0 \
-| 0  1   1  | 1/2  0  0 | --> | 0  1   0  | 3/2 -2  1 |
-\ 0  0   1  | -1   2 -1 /     \ 0  0   1  | -1   2 -1 /.</pre>
+| <span class="subtract-scaled-row-dest">0  1   1</span>  | <span class="subtract-scaled-row-dest">1/2  0  0</span> | --> | <span class="subtract-scaled-row-dest">0  1   0</span>  | <span class="subtract-scaled-row-dest">3/2 -2  1</span> |
+\ <span class="subtract-scaled-row-src">0  0   1</span>  | <span class="subtract-scaled-row-src">-1   2 -1</span> /     \ 0  0   1  | -1   2 -1 /.</pre>
 
-      We need <var>A</var><sub>02</sub> to be 0, so subtract row 2 scaled by 5/3 from row 0:
+      We need <var>A</var><sub>02</sub> to be 0, so subtract row <span class="subtract-scaled-row-src">2</span> scaled by 5/3 from row <span class="subtract-scaled-row-dest">0</span>:
 
-      <pre>/ 1 4/3 5/3 |  0  1/3 0 \     / 1 4/3  0  | 5/3 -3 5/3 \
+      <pre>/ <span class="subtract-scaled-row-dest">1 4/3 5/3</span> |  <span class="subtract-scaled-row-dest">0  1/3 0</span> \     / <span class="subtract-scaled-row-dest">1 4/3  0</span>  | <span class="subtract-scaled-row-dest">5/3 -3 5/3</span> \
 | 0  1   0  | 3/2 -2  1 | --> | 0  1   0  | 3/2 -2  1  |
-\ 0  0   1  | -1   2 -1 /     \ 0  0   1  | -1   2 -1  /.</pre>
+\ <span class="subtract-scaled-row-src">0  0   1</span>  | <span class="subtract-scaled-row-src">-1   2 -1</span> /     \ 0  0   1  | -1   2 -1  /.</pre>
 
-      We need <var>A</var><sub>01</sub> to be 0, so subtract row 1 scaled by 4/3 from row 0, which makes the left side of <var>A</var> the identity matrix:
+      We need <var>A</var><sub>01</sub> to be 0, so subtract row <span class="subtract-scaled-row-src">1</span> scaled by 4/3 from row <span class="subtract-scaled-row-dest">0</span>, which makes the left side of <var>A</var> the identity matrix:
 
-      <pre>/ 1 4/3  0  | 5/3  -3 5/3 \     / 1  0   0  | -1/3 -1/3 1/3 \
-| 0  1   0  | 3/2 -2   1  | --> | 0  1   0  |  3/2  -2   1  |
+      <pre>/ <span class="subtract-scaled-row-dest">1 4/3  0</span>  | <span class="subtract-scaled-row-dest">5/3  -3 5/3</span> \     / <span class="subtract-scaled-row-dest">1  0   0</span>  | <span class="subtract-scaled-row-dest">-1/3 -1/3 1/3</span> \
+| <span class="subtract-scaled-row-src">0  1   0</span>  | <span class="subtract-scaled-row-src">3/2 -2   1</span>  | --> | 0  1   0  |  3/2  -2   1  |
 \ 0  0   1  | -1   2  -1  /     \ 0  0   1  |  -1    2  -1  /.</pre>
 
       Since the left side of <var>A</var> is the identity matrix, the right side of <var>A</var> is <var>M</var><sup>-1</sup>. Therefore,
