@@ -16,6 +16,8 @@ import {
   impossible,
   parseField256Element,
   parseField257Element,
+  field256Pattern,
+  field257Pattern,
   textInput,
   styleNoWrap,
   spanNoWrap,
@@ -36,6 +38,8 @@ global
   impossible,
   parseField256Element,
   parseField257Element,
+  field256Pattern,
+  field257Pattern,
   textInput,
   styleNoWrap,
   spanNoWrap,
@@ -187,7 +191,14 @@ const parseCauchyMatrix = (
   }
 };
 
+const listPattern = pattern =>
+  `\\s*((${pattern})\\s*,\\s*){0,${lengthBound - 1}}(${pattern})\\s*`;
+
+const intPattern = `[+-]?0*[0-9]{1,${rationalDigitBound}}`;
+const intOrRatPattern = `${intPattern}(\\s*\\/\\s*${intPattern})?`;
+
 const xyInput = (
+  fieldType /* : FieldType */,
   xValue /* : string */,
   yValue /* : string */,
   onXChange /* : (string) => void */,
@@ -195,8 +206,26 @@ const xyInput = (
   inputClass /* : ?string */
 ) => {
   const size = 15;
-  // TODO: Make the pattern more specific.
-  const pattern = '[0-9+\\-, \t\n/]+';
+  let pattern;
+  switch (fieldType) {
+    case 'gf256':
+      pattern = field256Pattern;
+      break;
+
+    case 'gf257':
+      pattern = field257Pattern;
+      break;
+
+    case 'rational':
+      pattern = intOrRatPattern;
+      break;
+
+    default:
+      pattern = impossible(fieldType);
+  }
+
+  pattern = listPattern(pattern);
+
   return [
     'let ',
     spanNoWrap(
@@ -340,6 +369,7 @@ class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, Ca
       ),
       ' ',
       xyInput(
+        state.fieldType,
         state.x,
         state.y,
         s => this.onXChange(s),
