@@ -152,8 +152,8 @@ type RowReduceProps = {
 };
 
 type RowReduceComponentState = {
-  i: number;
-  currState: RowReduceState<*>;
+  i: number,
+  knownStates: RowReduceState<*>[],
 };
 */
 
@@ -161,7 +161,7 @@ type RowReduceComponentState = {
 class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceComponentState> */ {
   constructor({ m } /* : RowReduceProps */) {
     super({ m });
-    this.state = { i: 0, currState: rowReduceInitialState(m) };
+    this.state = { i: 0, knownStates: [rowReduceInitialState(m)] };
   }
 
   shouldComponentUpdate(
@@ -184,20 +184,41 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
       return;
     }
 
-    this.setState({ i: 0, currState: rowReduceInitialState(nextM) });
+    this.setState({ i: 0, knownStates: [rowReduceInitialState(nextM)] });
+  }
+
+  onPreviousStep() {
+    // Should be { ...state, i: state.i - 1 }, but that is unsupported
+    // by Safari.
+    this.setState(state => ({
+      i: state.i - 1,
+      knownStates: state.knownStates,
+    }));
   }
 
   onNextStep() {
-    this.setState(state => ({
-      i: state.i + 1,
-      currState: rowReduceNextState(state.currState),
-    }));
+    this.setState(state => {
+      if (state.i + 1 < state.knownStates.length) {
+        // Should be { ...state, i: state.i + 1 }, but that is unsupported
+        // by Safari.
+        return { i: state.i + 1, knownStates: state.knownStates };
+      }
+
+      const lastState = state.knownStates[state.knownStates.length - 1];
+      const newState = rowReduceNextState(lastState);
+      // Should be { ...state, i: state.i + 1, knownStates: state.knownStates.concat(newState) },
+      // but that is unsupported by Safari.
+      return {
+        i: state.i + 1,
+        knownStates: state.knownStates.concat(newState),
+      };
+    });
   }
 
   render(props /* : RowReduceProps */, state /* : RowReduceComponentState */) {
     const { h } = preact;
 
-    const { currState } = state;
+    const currState = state.knownStates[state.i];
 
     let children;
     switch (currState.type) {
@@ -381,6 +402,13 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
         impossible(currState.type);
     }
 
+    const prevDisabled = currState.type === 'initial';
+    const prevButton = h(
+      'button',
+      { disabled: prevDisabled, onClick: () => this.onPreviousStep() },
+      'Previous step'
+    );
+
     const nextDisabled =
       currState.type === 'singular' || currState.type === 'inverseFound';
     const nextButton = h(
@@ -389,7 +417,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
       'Next step'
     );
 
-    return h('div', {}, children, h('div', {}, nextButton));
+    return h('div', {}, children, h('div', {}, prevButton, ' ', nextButton));
   }
 }
 
