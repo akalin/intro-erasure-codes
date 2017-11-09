@@ -237,9 +237,23 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
       }
 
       case 'swap': {
-        const { aLeftPrev, aRightPrev, aLeft, aRight, rowA, rowB } = currState;
+        const {
+          i,
+          aLeftPrev,
+          aRightPrev,
+          aLeft,
+          aRight,
+          rowA,
+          rowB,
+        } = currState;
 
-        children = ['Swap rows ', inlineMath(rowA.toString()), ' and '];
+        children = [
+          'We need ',
+          inlineMath(`A_{${i}${i}}`),
+          ' to be non-zero, so swap rows ',
+          inlineMath(rowA.toString()),
+          ' and ',
+        ];
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
@@ -287,6 +301,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
       case 'divide': {
         const {
+          i,
           aLeftPrev,
           aRightPrev,
           aLeft,
@@ -295,7 +310,15 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           divisor,
         } = currState;
 
-        children = ['Divide row ', inlineMath(row.toString()), ' by '];
+        children = [
+          'We need ',
+          inlineMath(`A_{${i}${i}}`),
+          ' to be ',
+          inlineMath('1'),
+          ', so divide row ',
+          inlineMath(row.toString()),
+          ' by ',
+        ];
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
@@ -318,6 +341,8 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
       case 'subtractScaled': {
         const {
+          i,
+          j,
           aLeftPrev,
           aRightPrev,
           aLeft,
@@ -327,7 +352,14 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           scale,
         } = currState;
 
-        children = ['Subtract row ', inlineMath(rowSrc.toString())];
+        children = [
+          'We need ',
+          inlineMath(`A_{${i}${j}}`),
+          ' to be ',
+          inlineMath('0'),
+          ', so subtract row ',
+          inlineMath(rowSrc.toString()),
+        ];
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);

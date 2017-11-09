@@ -20,6 +20,7 @@ type RowReduceInitialState<T: Field<*>> = {
 
 type RowReduceSwapState<T: Field<*>> = {
   type: 'swap',
+  i: number,
   aLeftPrev: Matrix<T>,
   aRightPrev: Matrix<T>,
   aLeft: Matrix<T>,
@@ -36,6 +37,7 @@ type RowReduceSingularState<T: Field<*>> = {
 
 type RowReduceDivideState<T: Field<*>> = {
   type: 'divide',
+  i: number,
   aLeftPrev: Matrix<T>,
   aRightPrev: Matrix<T>,
   aLeft: Matrix<T>,
@@ -46,6 +48,8 @@ type RowReduceDivideState<T: Field<*>> = {
 
 type RowReduceSubtractScaledState<T: Field<*>> = {
   type: 'subtractScaled',
+  i: number,
+  j: number,
   aLeftPrev: Matrix<T>,
   aRightPrev: Matrix<T>,
   aLeft: Matrix<T>,
@@ -112,6 +116,7 @@ const rowReduceNextState = /* :: <T: Field<*>> */ (
         if (!aLeft.at(j, i).equals(zero)) {
           return {
             type: 'swap',
+            i,
             aLeftPrev: aLeft,
             aRightPrev: aRight,
             aLeft: aLeft.swapRows(i, j),
@@ -132,6 +137,7 @@ const rowReduceNextState = /* :: <T: Field<*>> */ (
     if (!pivot.equals(one)) {
       return {
         type: 'divide',
+        i,
         aLeftPrev: aLeft,
         aRightPrev: aRight,
         aLeft: aLeft.divideRow(i, pivot),
@@ -146,6 +152,8 @@ const rowReduceNextState = /* :: <T: Field<*>> */ (
       if (!t.equals(zero)) {
         return {
           type: 'subtractScaled',
+          i: j,
+          j: i,
           aLeftPrev: aLeft,
           aRightPrev: aRight,
           aLeft: aLeft.subtractScaledRow(j, i, t),
@@ -164,6 +172,8 @@ const rowReduceNextState = /* :: <T: Field<*>> */ (
       if (!t.equals(zero)) {
         return {
           type: 'subtractScaled',
+          i: j,
+          j: i,
           aLeftPrev: aLeft,
           aRightPrev: aRight,
           aLeft: aLeft.subtractScaledRow(j, i, t),

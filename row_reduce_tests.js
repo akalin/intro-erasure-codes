@@ -54,6 +54,7 @@ describe('row reduction', () => {
 
     expect(rowReduceNextState(initialState)).toEqual({
       type: 'swap',
+      i: 0,
       aLeftPrev: m,
       aRightPrev: id2x2,
       aLeft: new2x2(3, 4, 0, 2),
@@ -80,6 +81,7 @@ describe('row reduction', () => {
 
     expect(rowReduceNextState(initialState)).toEqual({
       type: 'divide',
+      i: 0,
       aLeftPrev: m,
       aRightPrev: id2x2,
       aLeft: new2x2(1, 1, 2, 4),
@@ -95,6 +97,8 @@ describe('row reduction', () => {
 
     expect(rowReduceNextState(initialState)).toEqual({
       type: 'subtractScaled',
+      i: 1,
+      j: 0,
       aLeftPrev: m,
       aRightPrev: id2x2,
       aLeft: new2x2(1, 1, 0, 2),
@@ -111,6 +115,8 @@ describe('row reduction', () => {
 
     expect(rowReduceNextState(initialState)).toEqual({
       type: 'subtractScaled',
+      i: 1,
+      j: 2,
       aLeftPrev: m,
       aRightPrev: id3x3,
       aLeft: new3x3(1, 1, 0, 0, 1, 0, 0, 0, 1),
@@ -127,6 +133,8 @@ describe('row reduction', () => {
 
     expect(rowReduceNextState(initialState)).toEqual({
       type: 'subtractScaled',
+      i: 1,
+      j: 2,
       aLeftPrev: m,
       aRightPrev: id3x3,
       aLeft: new3x3(1, 1, 0, 0, 1, 0, 0, 0, 1),
