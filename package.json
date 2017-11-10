@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "BSD-3-Clause",
   "scripts": {
-    "test": "flow && eslint ."
+    "test": "flow && eslint . && flow-coverage-report"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.5",
@@ -17,6 +17,16 @@
     "eslint-plugin-prettier": "^2.6.1",
     "eslint-plugin-react": "^7.9.1",
     "flow-bin": "^0.75.0",
+    "flow-coverage-report": "^0.5.0",
     "prettier": "^1.13.6"
+  },
+  "flow-coverage-report": {
+    "concurrentFiles": 8,
+    "flowCommandPath": "node_modules/.bin/flow",
+    "includeGlob": [
+      "*.js"
+    ],
+    "threshold": 90,
+    "type": "text"
   }
 }
