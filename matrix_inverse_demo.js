@@ -177,12 +177,11 @@ const isIdentity = /* :: <T: Field<*>> */ (
 };
 
 const getDetails = /* :: <T: Field<*>> */ (
-  header,
+  s /* : string */,
   mPrev /* : Matrix<T> */,
   m /* : Matrix<T> */,
   trailer /* : string */
 ) => {
-  const s = header.toString();
   if (!isIdentity(mPrev) && isIdentity(m)) {
     return [
       inlineMath(`${s}\\text{,}`),
@@ -207,7 +206,15 @@ const getDetails = /* :: <T: Field<*>> */ (
 };
 
 /* ::
-type RowReduceProps = {
+type RowReduceColors = {
+  swapRowAColor: string,
+  swapRowBColor: string,
+  divideRowColor: string,
+  subtractScaledRowSrcColor: string,
+  subtractScaledRowDestColor: string,
+};
+
+type RowReduceProps = RowReduceColors & {
   m: Matrix<*>,
 };
 
@@ -217,18 +224,32 @@ type RowReduceComponentState = {
 };
 */
 
+const colorsEqual = (a /* : RowReduceColors */, b /* : RowReduceColors */) => {
+  const keys = Object.keys(a);
+  for (let i = 0; i < keys.length; i += 1) {
+    if (a[keys[i]] !== b[keys[i]]) {
+      return false;
+    }
+  }
+  return true;
+};
+
 // eslint-disable-next-line no-unused-vars
 class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceComponentState> */ {
-  constructor({ m } /* : RowReduceProps */) {
-    super({ m });
-    this.state = { i: 0, knownStates: [rowReduceInitialState(m)] };
+  constructor(props /* : RowReduceProps */) {
+    super(props);
+    this.state = { i: 0, knownStates: [rowReduceInitialState(props.m)] };
   }
 
   shouldComponentUpdate(
-    { m: nextM } /* : RowReduceProps */,
+    nextProps /* : RowReduceProps */,
     nextState /* : RowReduceComponentState */
   ) {
-    if (!this.props.m.equals(nextM)) {
+    if (!this.props.m.equals(nextProps.m)) {
+      return true;
+    }
+
+    if (!colorsEqual(this.props, nextProps)) {
       return true;
     }
 
@@ -239,12 +260,12 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
     return false;
   }
 
-  componentWillReceiveProps({ m: nextM } /* : RowReduceProps */) {
-    if (this.props.m.equals(nextM)) {
+  componentWillReceiveProps(nextProps /* : RowReduceProps */) {
+    if (this.props.m.equals(nextProps.m)) {
       return;
     }
 
-    this.setState({ i: 0, knownStates: [rowReduceInitialState(nextM)] });
+    this.setState({ i: 0, knownStates: [rowReduceInitialState(nextProps.m)] });
   }
 
   onPreviousStep() {
@@ -280,6 +301,8 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
     const currState = state.knownStates[state.i];
 
+    const color = (c, s) => `{\\color{${c}}${s}}`;
+
     let children;
     switch (currState.type) {
       case 'initial': {
@@ -311,9 +334,11 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           'We need ',
           inlineMath(`A_{${i}${i}}`),
           ' to be non-zero, so swap rows ',
-          inlineMath(rowA.toString()),
+          inlineMath(color(props.swapRowAColor, rowA.toString())),
           ' and ',
         ];
+
+        const rowBStr = color(props.swapRowBColor, rowB.toString());
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
@@ -322,12 +347,12 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           aStr.length > matrixStringLengthBound
         ) {
           children = children.concat(
-            getDetails(rowB, aLeftPrev, aLeft, '.'),
+            getDetails(rowBStr, aLeftPrev, aLeft, '.'),
             ' (Matrices too big to display.)'
           );
         } else {
           children = children.concat(
-            getDetails(rowB, aLeftPrev, aLeft, ':'),
+            getDetails(rowBStr, aLeftPrev, aLeft, ':'),
             displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
           );
         }
@@ -376,9 +401,11 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           ' to be ',
           inlineMath('1'),
           ', so divide row ',
-          inlineMath(row.toString()),
+          inlineMath(color(props.divideRowColor, row.toString())),
           ' by ',
         ];
+
+        const divisorStr = divisor.toString();
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
@@ -387,12 +414,12 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           aStr.length > matrixStringLengthBound
         ) {
           children = children.concat(
-            getDetails(divisor, aLeftPrev, aLeft, '.'),
+            getDetails(divisorStr, aLeftPrev, aLeft, '.'),
             ' (Matrices too big to display.)'
           );
         } else {
           children = children.concat(
-            getDetails(divisor, aLeftPrev, aLeft, ':'),
+            getDetails(divisorStr, aLeftPrev, aLeft, ':'),
             displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
           );
         }
@@ -418,7 +445,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           ' to be ',
           inlineMath('0'),
           ', so subtract row ',
-          inlineMath(rowSrc.toString()),
+          inlineMath(color(props.subtractScaledRowSrcColor, rowSrc.toString())),
         ];
 
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
@@ -431,6 +458,11 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           );
         }
 
+        const rowDestStr = color(
+          props.subtractScaledRowDestColor,
+          rowDest.toString()
+        );
+
         const tooBig =
           aStrPrev.length > matrixStringLengthBound ||
           aStr.length > matrixStringLengthBound;
@@ -439,7 +471,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         children = children.concat(
           ' from row ',
-          getDetails(rowDest, aLeftPrev, aLeft, trailer)
+          getDetails(rowDestStr, aLeftPrev, aLeft, trailer)
         );
 
         if (tooBig) {
@@ -514,7 +546,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 }
 
 /* ::
-type MatrixInverseDemoProps = {
+type MatrixInverseDemoProps = RowReduceColors & {
   name: string,
   header?: HTMLElement,
   containerClass?: string,
@@ -575,7 +607,15 @@ class MatrixInverseDemo extends preact.Component /* :: <MatrixInverseDemoProps, 
         inlineMath('M = \\mathtt{SquareMatrix}(m)\\text{,}'),
         ' so ',
         displayMath(`M = ${mStr}\\text{.}`),
-        h(RowReduce, { m }),
+        // Should be { ...props, m }, but that is unsupported by Safari.
+        h(RowReduce, {
+          swapRowAColor: props.swapRowAColor,
+          swapRowBColor: props.swapRowBColor,
+          divideRowColor: props.divideRowColor,
+          subtractScaledRowSrcColor: props.subtractScaledRowSrcColor,
+          subtractScaledRowDestColor: props.subtractScaledRowDestColor,
+          m,
+        }),
       ];
     });
 
