@@ -146,6 +146,66 @@ ${elementStr}
 \\hskip -${arrayColSep} \\right)`;
 };
 
+const isUnitUpperTriangular = /* :: <T: Field<*>> */ (
+  // See https://github.com/prettier/prettier/issues/719 .
+  // eslint-disable-next-line prettier/prettier
+  m /* : Matrix<T> */
+) /* : boolean */ => {
+  for (let i = 0; i < m.rows(); i += 1) {
+    for (let j = 0; j <= i; j += 1) {
+      if (!m.at(i, j).equals(i === j ? m.oneElement() : m.zeroElement())) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+const isIdentity = /* :: <T: Field<*>> */ (
+  // See https://github.com/prettier/prettier/issues/719 .
+  // eslint-disable-next-line prettier/prettier
+  m /* : Matrix<T> */
+) /* : boolean */ => {
+  for (let i = 0; i < m.rows(); i += 1) {
+    for (let j = 0; j < m.rows(); j += 1) {
+      if (!m.at(i, j).equals(i === j ? m.oneElement() : m.zeroElement())) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+const getDetails = /* :: <T: Field<*>> */ (
+  header,
+  mPrev /* : Matrix<T> */,
+  m /* : Matrix<T> */,
+  trailer /* : string */
+) => {
+  const s = header.toString();
+  if (!isIdentity(mPrev) && isIdentity(m)) {
+    return [
+      inlineMath(`${s}\\text{,}`),
+      ' which makes the left side of ',
+      inlineMath('A'),
+      ' the identity matrix',
+      trailer,
+    ];
+  }
+
+  if (!isUnitUpperTriangular(mPrev) && isUnitUpperTriangular(m)) {
+    return [
+      inlineMath(`${s}\\text{,}`),
+      ' which makes the left side of ',
+      inlineMath('A'),
+      ' a unit upper triangular matrix',
+      trailer,
+    ];
+  }
+
+  return inlineMath(`${s}\\text{${trailer}}`);
+};
+
 /* ::
 type RowReduceProps = {
   m: Matrix<*>,
@@ -262,12 +322,12 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           aStr.length > matrixStringLengthBound
         ) {
           children = children.concat(
-            inlineMath(`${rowB.toString()}\\text{.}`),
+            getDetails(rowB, aLeftPrev, aLeft, '.'),
             ' (Matrices too big to display.)'
           );
         } else {
           children = children.concat(
-            inlineMath(`${rowB.toString()}\\text{:}`),
+            getDetails(rowB, aLeftPrev, aLeft, ':'),
             displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
           );
         }
@@ -327,12 +387,12 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           aStr.length > matrixStringLengthBound
         ) {
           children = children.concat(
-            inlineMath(`${divisor.toString()}\\text{.}`),
+            getDetails(divisor, aLeftPrev, aLeft, '.'),
             ' (Matrices too big to display.)'
           );
         } else {
           children = children.concat(
-            inlineMath(`${divisor.toString()}\\text{:}`),
+            getDetails(divisor, aLeftPrev, aLeft, ':'),
             displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
           );
         }
@@ -364,12 +424,6 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
         const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
         const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
 
-        const tooBig =
-          aStrPrev.length > matrixStringLengthBound ||
-          aStr.length > matrixStringLengthBound;
-
-        const trailer = tooBig ? '.' : ':';
-
         if (scale) {
           children = children.concat(
             ' scaled by ',
@@ -377,9 +431,15 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           );
         }
 
+        const tooBig =
+          aStrPrev.length > matrixStringLengthBound ||
+          aStr.length > matrixStringLengthBound;
+
+        const trailer = tooBig ? '.' : ':';
+
         children = children.concat(
           ' from row ',
-          inlineMath(`${rowDest.toString()}\\text{${trailer}}`)
+          getDetails(rowDest, aLeftPrev, aLeft, trailer)
         );
 
         if (tooBig) {
