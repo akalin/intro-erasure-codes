@@ -105,9 +105,12 @@ const parseSquareMatrix = (
   }
 };
 
+const color = (c, s) => `{\\color{${c}}${s}}`;
+
 const augmentedMatrixLaTeXString = /* :: <T: Field<*>> */ (
   aLeft /* : Matrix<T> */,
-  aRight /* : Matrix<T> */
+  aRight /* : Matrix<T> */,
+  rowColors /* : (?string)[] */
 ) /* : string */ => {
   if (aLeft.rows() !== aRight.rows()) {
     throw new Error('Row count mismatch');
@@ -120,12 +123,14 @@ const augmentedMatrixLaTeXString = /* :: <T: Field<*>> */ (
 
   const rowStrs = [];
   for (let i = 0; i < aLeft.rows(); i += 1) {
+    const rowColor = rowColors[i] || '';
+    const elemColor = rowColor ? s => color(rowColor, s) : s => s;
     const elemStrs = [];
     for (let j = 0; j < aLeft.columns(); j += 1) {
-      elemStrs.push(aLeft.at(i, j).toString());
+      elemStrs.push(elemColor(aLeft.at(i, j).toString()));
     }
     for (let j = 0; j < aRight.columns(); j += 1) {
-      elemStrs.push(aRight.at(i, j).toString());
+      elemStrs.push(elemColor(aRight.at(i, j).toString()));
     }
     const rowStr = elemStrs.join(' & ');
     rowStrs.push(rowStr);
@@ -301,8 +306,6 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
     const currState = state.knownStates[state.i];
 
-    const color = (c, s) => `{\\color{${c}}${s}}`;
-
     let children;
     switch (currState.type) {
       case 'initial': {
@@ -310,7 +313,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         children = ['The initial augmented matrix ', inlineMath('A'), ' is '];
 
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, []);
         if (aStr.length > matrixStringLengthBound) {
           children.push(' too big to display.');
         } else {
@@ -340,8 +343,20 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         const rowBStr = color(props.swapRowBColor, rowB.toString());
 
-        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const rowColorsPrev = [];
+        rowColorsPrev[rowA] = props.swapRowAColor;
+        rowColorsPrev[rowB] = props.swapRowBColor;
+
+        const rowColors = [];
+        rowColors[rowA] = props.swapRowBColor;
+        rowColors[rowB] = props.swapRowAColor;
+
+        const aStrPrev = augmentedMatrixLaTeXString(
+          aLeftPrev,
+          aRightPrev,
+          rowColorsPrev
+        );
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, rowColors);
         if (
           aStrPrev.length > matrixStringLengthBound ||
           aStr.length > matrixStringLengthBound
@@ -364,7 +379,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         children = ['The current value of ', inlineMath('A'), ' is '];
 
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, []);
         if (aStr.length > matrixStringLengthBound) {
           children = children.concat(
             'too big to display, but its current value implies that ',
@@ -407,8 +422,15 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         const divisorStr = divisor.toString();
 
-        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const rowColors = [];
+        rowColors[row] = props.divideRowColor;
+
+        const aStrPrev = augmentedMatrixLaTeXString(
+          aLeftPrev,
+          aRightPrev,
+          rowColors
+        );
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, rowColors);
         if (
           aStrPrev.length > matrixStringLengthBound ||
           aStr.length > matrixStringLengthBound
@@ -448,8 +470,19 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
           inlineMath(color(props.subtractScaledRowSrcColor, rowSrc.toString())),
         ];
 
-        const aStrPrev = augmentedMatrixLaTeXString(aLeftPrev, aRightPrev);
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const rowColorsPrev = [];
+        rowColorsPrev[rowSrc] = props.subtractScaledRowSrcColor;
+        rowColorsPrev[rowDest] = props.subtractScaledRowDestColor;
+
+        const rowColors = [];
+        rowColors[rowDest] = props.subtractScaledRowDestColor;
+
+        const aStrPrev = augmentedMatrixLaTeXString(
+          aLeftPrev,
+          aRightPrev,
+          rowColorsPrev
+        );
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, rowColors);
 
         if (scale) {
           children = children.concat(
@@ -489,7 +522,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
 
         children = ['The current value of ', inlineMath('A'), ' is '];
 
-        const aStr = augmentedMatrixLaTeXString(aLeft, aRight);
+        const aStr = augmentedMatrixLaTeXString(aLeft, aRight, []);
         const mInvStr = aRight.toLaTeXString();
         if (mInvStr.length > matrixStringLengthBound) {
           children = children.concat(
