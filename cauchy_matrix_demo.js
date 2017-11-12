@@ -117,7 +117,6 @@ const xyInput = (
 ) => {
   const inputSize = 15;
   return [
-    'let ',
     spanNoWrap(
       inlineMath('x = ['),
       ' ',
@@ -156,6 +155,7 @@ type CauchyMatrixDemoProps = {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
+  allowFieldTypeChanges: boolean,
 };
 
 type CauchyMatrixDemoState = {
@@ -247,18 +247,24 @@ class CauchyMatrixDemo extends preact.Component /* :: <CauchyMatrixDemoProps, Ca
       return t;
     });
 
+    const preInput = props.allowFieldTypeChanges
+      ? [
+          'Working over the ',
+          fieldTypeChoice(
+            `${props.name}FieldTypeChoice`,
+            state.fieldType,
+            fieldType => this.onFieldTypeChange(fieldType),
+            ','
+          ),
+          ' let ',
+        ]
+      : ['Let '];
+
     return preact.h(
       'div',
       { class: props.containerClass },
       props.header,
-      'Working over the ',
-      fieldTypeChoice(
-        `${props.name}FieldTypeChoice`,
-        state.fieldType,
-        fieldType => this.onFieldTypeChange(fieldType),
-        ','
-      ),
-      ' ',
+      preInput,
       xyInput(
         state.fieldType,
         state.x,

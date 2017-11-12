@@ -584,6 +584,7 @@ type MatrixInverseDemoProps = RowReduceColors & {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
+  allowFieldTypeChanges: boolean,
 };
 
 type MatrixInverseDemoState = {
@@ -652,19 +653,25 @@ class MatrixInverseDemo extends preact.Component /* :: <MatrixInverseDemoProps, 
       ];
     });
 
+    const preInput = props.allowFieldTypeChanges
+      ? [
+          'Working over the ',
+          fieldTypeChoice(
+            `${props.name}FieldTypeChoice`,
+            state.fieldType,
+            fieldType => this.onFieldTypeChange(fieldType),
+            ','
+          ),
+          ' let ',
+        ]
+      : ['Let '];
+
     const inputSize = 30;
     return h(
       'div',
       { class: props.containerClass },
       props.header,
-      'Working over the ',
-      fieldTypeChoice(
-        `${props.name}FieldTypeChoice`,
-        state.fieldType,
-        fieldType => this.onFieldTypeChange(fieldType),
-        ','
-      ),
-      ' let ',
+      preInput,
       spanNoWrap(
         inlineMath('m = ['),
         ' ',
