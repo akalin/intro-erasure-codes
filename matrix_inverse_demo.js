@@ -221,6 +221,7 @@ type RowReduceColors = {
 
 type RowReduceProps = RowReduceColors & {
   m: Matrix<*>,
+  buttonClass?: string,
 };
 
 type RowReduceComponentState = {
@@ -562,7 +563,11 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
     const prevDisabled = currState.type === 'initial';
     const prevButton = h(
       'button',
-      { disabled: prevDisabled, onClick: () => this.onPreviousStep() },
+      {
+        class: props.buttonClass,
+        disabled: prevDisabled,
+        onClick: () => this.onPreviousStep(),
+      },
       'Previous step'
     );
 
@@ -570,7 +575,11 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
       currState.type === 'singular' || currState.type === 'inverseFound';
     const nextButton = h(
       'button',
-      { disabled: nextDisabled, onClick: () => this.onNextStep() },
+      {
+        class: props.buttonClass,
+        disabled: nextDisabled,
+        onClick: () => this.onNextStep(),
+      },
       'Next step'
     );
 
@@ -584,6 +593,7 @@ type MatrixInverseDemoProps = RowReduceColors & {
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
+  buttonClass?: string,
   allowFieldTypeChanges: boolean,
 };
 
@@ -649,6 +659,7 @@ class MatrixInverseDemo extends preact.Component /* :: <MatrixInverseDemoProps, 
           subtractScaledRowSrcColor: props.subtractScaledRowSrcColor,
           subtractScaledRowDestColor: props.subtractScaledRowDestColor,
           m,
+          buttonClass: props.buttonClass,
         }),
       ];
     });
