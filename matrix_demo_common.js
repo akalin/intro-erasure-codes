@@ -10,8 +10,10 @@ import {
   impossible,
   parseField256Element,
   parseField257Element,
+  parseListCapped,
   field256Pattern,
   field257Pattern,
+  listPattern,
   styleNoWrap,
   textInput,
 } from './demo_common';
@@ -30,8 +32,10 @@ global
   impossible,
   parseField256Element,
   parseField257Element,
+  parseListCapped,
   field256Pattern,
   field257Pattern,
+  listPattern,
   styleNoWrap,
   textInput,
 
@@ -75,18 +79,6 @@ const fieldTypeChoice = (
     ' ',
     choiceRadio('rational', ` field of rational numbers${trailer}`),
   ];
-};
-
-const parseListCapped = (
-  name /* : string */,
-  s /* : string */,
-  lengthBound /* : number */
-) /* : string[] */ => {
-  const strs = s.split(',');
-  if (strs.length > lengthBound) {
-    throw new VChildError([inlineMath(name), ' has too many elements.']);
-  }
-  return strs.map(t => t.trim());
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -166,9 +158,6 @@ const parseBigRationalListCapped = (
   return strs.map((t, i) => parseBigRational(`{${name}}_{${i}}`, t));
 };
 
-const listPattern = (pattern, lengthBound) =>
-  `\\s*((${pattern})\\s*,\\s*){0,${lengthBound - 1}}(${pattern})\\s*`;
-
 const intPattern = `[+-]?0*[0-9]{1,${rationalDigitBound}}`;
 const intOrRatPattern = `${intPattern}(\\s*\\/\\s*${intPattern})?`;
 
@@ -204,17 +193,14 @@ const listInput = (
   return textInput(value, onChange, size, pattern, inputClass);
 };
 
-// eslint-disable-next-line no-unused-vars
-const matrixStringLengthBound = 10 * 1024;
-
 /* ::
 export {
   fieldTypeChoice,
   parseField256ElementListCapped,
   parseField257ElementListCapped,
+  parseBigRational,
   parseBigRationalListCapped,
   listInput,
-  matrixStringLengthBound,
 };
 export type { FieldType };
 */

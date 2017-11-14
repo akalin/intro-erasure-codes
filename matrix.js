@@ -15,6 +15,13 @@ class SingularMatrixError extends Error {
   }
 }
 
+/* ::
+type LaTeXStringOptions<T: Field<*>> = {
+  environment?: string,
+  elementToLaTeXString?: (T) => string,
+};
+*/
+
 // eslint-disable-next-line no-unused-vars
 class Matrix /* :: <T: Field<*>> */ {
   /* ::
@@ -68,20 +75,23 @@ class Matrix /* :: <T: Field<*>> */ {
     return this._elements.slice();
   }
 
-  toLaTeXString() /* : string */ {
+  toLaTeXString(options /* :: ?: LaTeXStringOptions<T> */) /* : string */ {
+    const environment = (options && options.environment) || 'pmatrix';
+    const elementToLaTeXString =
+      (options && options.elementToLaTeXString) || (x => x.toString());
     const rowStrs = [];
     for (let i = 0; i < this._rows; i += 1) {
       const row = this._elements.slice(
         i * this._columns,
         (i + 1) * this._columns
       );
-      const rowStr = row.map(x => x.toString()).join(' & ');
+      const rowStr = row.map(x => elementToLaTeXString(x)).join(' & ');
       rowStrs.push(rowStr);
     }
     const elementStr = rowStrs.join(' \\\\\n');
-    return `\\begin{pmatrix}
+    return `\\begin{${environment}}
 ${elementStr}
-\\end{pmatrix}`;
+\\end{${environment}}`;
   }
 
   equals(n /* : Matrix<T> */) /* : boolean */ {
@@ -262,5 +272,6 @@ const newCauchyMatrix = /* :: <T: Field<*>> */ (
   );
 
 /* ::
+export type { LaTeXStringOptions };
 export { SingularMatrixError, Matrix, newCauchyMatrix };
 */

@@ -90,6 +90,19 @@ const parseField257Element = (
 ) /* : Field257Element */ =>
   new Field257Element(parseNonNegativeBoundedInt(name, s, 257));
 
+// eslint-disable-next-line no-unused-vars
+const parseListCapped = (
+  name /* : string */,
+  s /* : string */,
+  lengthBound /* : number */
+) /* : string[] */ => {
+  const strs = s.split(',');
+  if (strs.length > lengthBound) {
+    throw new VChildError([inlineMath(name), ' has too many elements.']);
+  }
+  return strs.map(t => t.trim());
+};
+
 // Needed to work around
 // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12263977/
 // .
@@ -104,6 +117,13 @@ const field256Pattern = isEdge
 const field257Pattern = isEdge
   ? '0*[0-9]{1,3}'
   : '0*(([0-9])|([0-9]{2})|(1[0-9]{2})|(2[0-4][0-9])|(25[0-6]))';
+
+// eslint-disable-next-line no-unused-vars
+const listPattern = (
+  pattern /* : string */,
+  lengthBound /* : number */
+) /* : string */ =>
+  `\\s*((${pattern})\\s*,\\s*){0,${lengthBound - 1}}(${pattern})\\s*`;
 
 // eslint-disable-next-line no-unused-vars
 const textInput = (
@@ -158,6 +178,9 @@ const binaryOpInput = (
   ];
 };
 
+// eslint-disable-next-line no-unused-vars
+const matrixStringLengthBound = 10 * 1024;
+
 /* :: export {
   VChildError,
   handleVChildError,
@@ -165,11 +188,14 @@ const binaryOpInput = (
   strictParseInt,
   parseField256Element,
   parseField257Element,
+  parseListCapped,
   isEdge,
   field256Pattern,
   field257Pattern,
+  listPattern,
   textInput,
   styleNoWrap,
   spanNoWrap,
   binaryOpInput,
+  matrixStringLengthBound,
 }; */

@@ -5,6 +5,35 @@
     <title>Erasure codes</title>
   </head>
   <body>
+    <script src="https://unpkg.com/preact@8.2.7"></script>
+
+    <script src="https://cdn.rawgit.com/jasondavies/jsbn/v1.4/jsbn.js"></script>
+    <script src="https://cdn.rawgit.com/jasondavies/jsbn/v1.4/jsbn2.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>
+
+    <style>
+    .katex { font-size: 1.0em; }
+    </style>
+
+    <script src="arithmetic.js"></script>
+    <script src="math.js"></script>
+    <script src="field_257.js"></script>
+    <script src="carryless.js"></script>
+    <script src="field_256.js"></script>
+    <script src="rational.js"></script>
+    <script src="matrix.js"></script>
+    <script src="cauchy_erasure_code.js"></script>
+    <script src="demo_common.js"></script>
+    <script src="cauchy_matrix_demo.js"></script>
+    <script src="row_reduce.js"></script>
+    <script src="compute_parity_demo.js"></script>
+
+    <style>
+    input:invalid { color: red; }
+    </style>
+
     <div>
       <h3>Example 1: <code>ComputeParity</code></h3>
       Let
@@ -59,5 +88,21 @@
       </span>
 
     </div>
+
+    <div id="computeParityDemo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('computeParityDemo');
+      render(h(ComputeParityDemo, {
+        initialD: 'da, db, 0d', initialM: '2',
+        name: 'computeParityDemo',
+        header: h('h3', null, 'Interactive Example 1: ', h('code', null, 'ComputeParity')),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>

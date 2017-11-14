@@ -14,6 +14,7 @@ import {
   handleVChildError,
   impossible,
   spanNoWrap,
+  matrixStringLengthBound,
 } from './demo_common';
 import { Matrix, newCauchyMatrix } from './matrix';
 import {
@@ -23,7 +24,6 @@ import {
   parseField257ElementListCapped,
   parseBigRationalListCapped,
   listInput,
-  matrixStringLengthBound,
 } from './matrix_demo_common';
 import { inlineMath, displayMath } from './math';
 */
