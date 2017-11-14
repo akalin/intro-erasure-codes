@@ -152,8 +152,6 @@ ${elementStr}
 };
 
 const isUnitUpperTriangular = /* :: <T: Field<*>> */ (
-  // See https://github.com/prettier/prettier/issues/719 .
-  // eslint-disable-next-line prettier/prettier
   m /* : Matrix<T> */
 ) /* : boolean */ => {
   for (let i = 0; i < m.rows(); i += 1) {
@@ -167,8 +165,6 @@ const isUnitUpperTriangular = /* :: <T: Field<*>> */ (
 };
 
 const isIdentity = /* :: <T: Field<*>> */ (
-  // See https://github.com/prettier/prettier/issues/719 .
-  // eslint-disable-next-line prettier/prettier
   m /* : Matrix<T> */
 ) /* : boolean */ => {
   for (let i = 0; i < m.rows(); i += 1) {
