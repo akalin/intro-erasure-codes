@@ -6,7 +6,7 @@
 import { Matrix, newCauchyMatrix } from './matrix';
 import { Field256Element } from './field_256';
 */
-/* global newCauchyMatrix, Field256Element */
+/* global Matrix, newCauchyMatrix, Field256Element */
 
 // eslint-disable-next-line no-unused-vars
 const computeParityMatrix = (
@@ -24,6 +24,18 @@ const computeParityMatrix = (
   return newCauchyMatrix(x, y);
 };
 
+// eslint-disable-next-line no-unused-vars
+const computeParity = (
+  d /* : Field256Element[] */,
+  m /* : number */
+) /* : Field256Element[] */ => {
+  const n = d.length;
+  const P = computeParityMatrix(n, m);
+  const dCol = new Matrix(n, 1, d);
+  const pCol = P.times(dCol);
+  return pCol.elements();
+};
+
 /* ::
-export { computeParityMatrix };
+export { computeParityMatrix, computeParity };
 */

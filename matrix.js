@@ -64,6 +64,10 @@ class Matrix /* :: <T: Field<*>> */ {
     return this._columns;
   }
 
+  elements() /* : T[] */ {
+    return this._elements.slice();
+  }
+
   toLaTeXString() /* : string */ {
     const rowStrs = [];
     for (let i = 0; i < this._rows; i += 1) {

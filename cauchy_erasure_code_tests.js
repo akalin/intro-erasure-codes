@@ -7,9 +7,9 @@
 /* ::
 import { Field256Element } from './field_256';
 import { Matrix } from './matrix';
-import { computeParityMatrix } from './cauchy_erasure_code';
+import { computeParityMatrix, computeParity } from './cauchy_erasure_code';
 */
-/* global Field256Element, Matrix, computeParityMatrix */
+/* global Field256Element, Matrix, computeParityMatrix, computeParity */
 
 describe('Cauchy erasure code', () => {
   it('computeParityMatrix', () => {
@@ -33,5 +33,11 @@ describe('Cauchy erasure code', () => {
     expect(() => computeParityMatrix(256, 1)).toThrowError(
       'n must be >= 0 and < 256'
     );
+  });
+
+  it('computeParity', () => {
+    const d = [0xda, 0xdb, 0x0d];
+    const p = computeParity(d.map(x => new Field256Element(x)), 2);
+    expect(p).toEqual([0x52, 0x0c].map(x => new Field256Element(x)));
   });
 });
