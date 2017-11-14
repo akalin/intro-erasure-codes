@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Erasure codes</title>
+  </head>
+  <body>
+    <div>
+      <h3>Example 1: <code>ComputeParity</code></h3>
+      Let
+
+      <span style="white-space: nowrap;">
+        <var>d</var> = [ da, db, 0d ]
+      </span>
+
+      be the input data bytes and let
+
+      <span style="white-space: nowrap;">
+        <var>m</var> = 2
+      </span>
+
+      be the desired parity byte count. Then, with the input byte
+      count
+
+      <span style="white-space: nowrap;">
+        <var>n</var> = 3,
+      </span>
+
+      the
+
+      <span style="white-space: nowrap;">
+        <var>m</var> &times; <var>n</var>
+      </span>
+
+      Cauchy parity matrix computed using
+
+      <span style="white-space: nowrap;">
+        <var>x</var><sub>i</sub> = <var>n</var> + <var>i</var>
+      </span>
+
+      and
+
+      <span style="white-space: nowrap;">
+        <var>y</var><sub>i</sub> = <var>i</var>
+      </span>
+
+      is
+      <pre>/ f6 8d 01 \
+\ cb 52 7b /.</pre>
+      Therefore, the parity bytes are computed as
+      <pre>                _    _     _    _
+/ f6 8d 01 \   |  da  |   |  52  |
+\ cb 52 7b / * |  db  | = |_ 0c _|,
+               |_ 0d _|</pre>
+      and thus the output parity bytes are
+
+      <span style="white-space: nowrap;">
+        <var>p</var> = [ <span style="color: red;">52</span>, <span style="color: red;">0c</span> ].
+      </span>
+
+    </div>
+  </body>
+</html>
