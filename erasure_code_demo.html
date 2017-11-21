@@ -104,5 +104,81 @@
       }), root.parent, root);
     })();
     </script>
+
+    <div>
+      <h3>Example 2: <code>ReconstructData</code></h3>
+      Let
+
+      <span style="white-space: nowrap;">
+        <var>d</var><sub>partial</sub> = [ ??, db, ?? ]
+      </span>
+
+      be the input partial data bytes and
+
+      <span style="white-space: nowrap;">
+        <var>p</var><sub>partial</sub> = [ 52, 0c ]
+      </span>
+
+      be the input partial parity bytes. Then, with the data byte
+      count
+
+      <span style="white-space: nowrap;">
+        <var>n</var> = 3
+      </span>
+
+      and the parity byte count
+
+      <span style="white-space: nowrap;">
+        <var>m</var> = 2,
+      </span>
+
+      and appending the rows of the
+
+      <span style="white-space: nowrap;">
+        <var>m</var> &times; <var>n</var>
+      </span>
+
+      Cauchy parity matrix to the
+
+      <span style="white-space: nowrap;">
+        <var>n</var> &times; <var>n</var>
+      </span>
+
+      identity matrix, we get
+
+      <pre>/ X01X X00X X00X \
+|  00   01   00  |
+| X00X X00X X01X |
+|  f6   8d   01  |
+\  cb   52   7b  /,</pre>
+
+      where the rows corresponding to the unknown data and parity
+      bytes are crossed out. Taking the first <var>n</var> rows that
+      aren&rsquo;t crossed out, we get the square matrix
+
+      <pre>/ 00 01 00 \
+| f6 8d 01 |
+\ cb 52 7b /</pre>
+
+      which has inverse
+
+      <pre>/ 01 d0 d6 \
+| 01 00 00 |
+\ 7b b8 bb /.</pre>
+
+      Therefore, the data bytes are reconstructed from the first
+      <var>n</var> known data and parity bytes as
+
+      <pre>                _    _     _    _
+/ 01 d0 d6 \   |  db  |   |  da  |
+| 01 00 00 | * |  52  | = |  db  |
+\ 7b b8 bb /   |_ 0c _|   |_ 0d _|,</pre>
+
+      and thus the output data bytes are
+
+      <span style="white-space: nowrap;">
+        <var>d</var> = [ <span style="color: red;">da</span>, <span style="color: red;">db</span>, <span style="color: red;">0d</span> ].
+      </span>
+    </div>
   </body>
 </html>
