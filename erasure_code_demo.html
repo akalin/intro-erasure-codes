@@ -26,9 +26,11 @@
     <script src="matrix.js"></script>
     <script src="cauchy_erasure_code.js"></script>
     <script src="demo_common.js"></script>
+    <script src="erasure_code_demo_common.js"></script>
     <script src="cauchy_matrix_demo.js"></script>
     <script src="row_reduce.js"></script>
     <script src="compute_parity_demo.js"></script>
+    <script src="reconstruct_data_demo.js"></script>
 
     <style>
     input:invalid { color: red; }
@@ -180,5 +182,21 @@
         <var>d</var> = [ <span style="color: red;">da</span>, <span style="color: red;">db</span>, <span style="color: red;">0d</span> ].
       </span>
     </div>
+
+    <div id="reconstructDataDemo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('reconstructDataDemo');
+      render(h(ReconstructDataDemo, {
+        initialPartialD: '??, db, ??', initialPartialP: '52, 0c',
+        name: 'reconstructDataDemo',
+        header: h('h3', null, 'Interactive Example 2: ', h('code', null, 'ReconstructData')),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
   </body>
 </html>

@@ -47,10 +47,10 @@ class NotEnoughKnownBytesError extends Error {
 }
 
 // eslint-disable-next-line no-unused-vars
-const reconstructData = (
+const computeReconstructionIntermediates = (
   partialD /* : (?Field256Element)[] */,
   partialP /* : (?Field256Element)[] */
-) /* : Field256Element[] */ => {
+) /* : { bytesToUse: Field256Element[], M: Matrix<Field256Element> } */ => {
   const n = partialD.length;
   const m = partialP.length;
 
@@ -85,14 +85,34 @@ const reconstructData = (
     }
     return P.at(parityIndicesToUse[i - knownDataIndices.length], j);
   });
+
+  return { bytesToUse: knownData.concat(parityToUse), M };
+};
+
+// eslint-disable-next-line no-unused-vars
+const reconstructData = (
+  partialD /* : (?Field256Element)[] */,
+  partialP /* : (?Field256Element)[] */
+) /* : Field256Element[] */ => {
+  const n = partialD.length;
+
+  const { bytesToUse, M } = computeReconstructionIntermediates(
+    partialD,
+    partialP
+  );
   const MInv = M.inverse();
 
-  const bytesToUse = knownData.concat(parityToUse);
   const bytesToUseCol = new Matrix(n, 1, bytesToUse);
   const dCol = MInv.times(bytesToUseCol);
   return dCol.elements();
 };
 
 /* ::
-export { computeParityMatrix, computeParity, reconstructData };
+export {
+  computeParityMatrix,
+  computeParity,
+  computeReconstructionIntermediates,
+  reconstructData,
+  NotEnoughKnownBytesError,
+};
 */

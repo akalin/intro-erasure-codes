@@ -16,6 +16,7 @@ import {
   spanNoWrap,
   matrixStringLengthBound,
 } from './demo_common';
+import { parseHex, byteLaTeX } from './erasure_code_demo_common';
 import { Field256Element } from './field_256';
 import { Matrix, type LaTeXStringOptions } from './matrix';
 import { computeParityMatrix, computeParity } from './cauchy_erasure_code';
@@ -36,6 +37,9 @@ global
   spanNoWrap,
   matrixStringLengthBound,
 
+  parseHex,
+  byteLaTeX,
+
   Field256Element,
 
   Matrix,
@@ -47,24 +51,12 @@ global
   displayMath,
 */
 
-const mnBound = 50;
+const mnBoundCompute = 50;
 
 // Work around
 // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12263977/
 // .
 const mPattern = isEdge ? '0*[0-9]{1,2}' : '(0*[0-9])|(0*[1-4][0-9])|(0*50)';
-
-// eslint-disable-next-line no-unused-vars
-const parseHex = (name /* : string */, s /* : string */) /* : BigInteger */ => {
-  if (!/^[+-]?[0-9A-Fa-f]+$/.test(s)) {
-    throw new VChildError([
-      inlineMath(name),
-      ' is not a valid hexadecimal number.',
-    ]);
-  }
-
-  return new BigInteger(s, 16);
-};
 
 const parseByte = (
   name /* : string */,
@@ -86,7 +78,7 @@ const parseByteList = (
   name /* : string */,
   s /* : string */
 ) /* : Field256Element[] */ => {
-  const strs = parseListCapped(name, s, mnBound);
+  const strs = parseListCapped(name, s, mnBoundCompute);
   return strs.map((t, i) => parseByte(`{${name}}_{${i}}`, t));
 };
 
@@ -105,7 +97,7 @@ const dataInput = (
       dValue,
       s => onDChange(s),
       inputSize,
-      listPattern(bytePattern, mnBound),
+      listPattern(bytePattern, mnBoundCompute),
       inputClass
     ),
     ' ',
@@ -124,8 +116,6 @@ const parsePositiveInt = (
 
   return n;
 };
-
-const hex = x => `\\mathtt{${x.toString(16).padStart(2, '0')}}`;
 
 /* ::
 type ComputeParityDemoProps = {
@@ -174,11 +164,11 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
       const d = parseByteList('d', state.d);
       const n = d.length;
       const mBig = parsePositiveInt('m', state.m);
-      if (mBig.compareTo(new BigInteger(mnBound.toString(10), 10)) > 0) {
+      if (mBig.compareTo(new BigInteger(mnBoundCompute.toString(10), 10)) > 0) {
         throw new VChildError([
           inlineMath('m'),
           ' must be less than or equal to ',
-          inlineMath(mnBound.toString()),
+          inlineMath(mnBoundCompute.toString()),
           '.',
         ]);
       }
@@ -198,7 +188,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
 
       const P = computeParityMatrix(n, m);
 
-      const PStr = P.toLaTeXString({ elementToLaTeXString: hex });
+      const PStr = P.toLaTeXString({ elementToLaTeXString: byteLaTeX });
       if (PStr.length > matrixStringLengthBound) {
         throw new VChildError([
           'The Cauchy matrix parity matrix is too big to display.',
@@ -207,7 +197,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
 
       const colOptions /* : LaTeXStringOptions<Field256Element> */ = {
         environment: 'bmatrix',
-        elementToLaTeXString: hex,
+        elementToLaTeXString: byteLaTeX,
       };
 
       const pCol = new Matrix(m, 1, p);
@@ -217,7 +207,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
       const pColStr = pCol.toLaTeXString(colOptions);
 
       const pStr = p
-        .map(x => `{\\color{${props.resultColor}}${hex(x)}}`)
+        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
         .join(', ');
 
       return [
@@ -251,7 +241,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
         textInput(
           state.m,
           s => this.onMChange(s),
-          mnBound.toString(10).length,
+          mnBoundCompute.toString(10).length,
           mPattern,
           props.inputClass
         )

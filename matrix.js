@@ -18,9 +18,12 @@ class SingularMatrixError extends Error {
 /* ::
 type LaTeXStringOptions<T: Field<*>> = {
   environment?: string,
-  elementToLaTeXString?: (T) => string,
+  elementToLaTeXString?: (T, number, number) => string,
 };
 */
+
+// eslint-disable-next-line no-unused-vars
+const defaultElementToLaTeXString = (x, i, j) => x.toString();
 
 // eslint-disable-next-line no-unused-vars
 class Matrix /* :: <T: Field<*>> */ {
@@ -78,14 +81,16 @@ class Matrix /* :: <T: Field<*>> */ {
   toLaTeXString(options /* :: ?: LaTeXStringOptions<T> */) /* : string */ {
     const environment = (options && options.environment) || 'pmatrix';
     const elementToLaTeXString =
-      (options && options.elementToLaTeXString) || (x => x.toString());
+      (options && options.elementToLaTeXString) || defaultElementToLaTeXString;
     const rowStrs = [];
     for (let i = 0; i < this._rows; i += 1) {
       const row = this._elements.slice(
         i * this._columns,
         (i + 1) * this._columns
       );
-      const rowStr = row.map(x => elementToLaTeXString(x)).join(' & ');
+      const rowStr = row
+        .map((x, j) => elementToLaTeXString(x, i, j))
+        .join(' & ');
       rowStrs.push(rowStr);
     }
     const elementStr = rowStrs.join(' \\\\\n');
