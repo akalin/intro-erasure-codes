@@ -116,6 +116,7 @@ const maybeByteInput = (
 /* ::
 type ReconstructDataDemoProps = {
   name: string,
+  detailed: boolean,
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
@@ -199,6 +200,15 @@ class ReconstructDataDemo extends preact.Component /* :: <ReconstructDataDemoPro
 
       const { bytesToUse, M, d } = info;
 
+      const dStr = d
+        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
+        .join(', ');
+      const dComponent = inlineMath(`d = [ ${dStr} ]\\text{.}`);
+
+      if (!props.detailed) {
+        return [' Then the output data bytes are ', dComponent];
+      }
+
       const P = computeParityMatrix(n, m);
       const G = new Matrix(n + m, n, (i, j) => {
         if (i < n) {
@@ -233,10 +243,6 @@ class ReconstructDataDemo extends preact.Component /* :: <ReconstructDataDemoPro
 
       const dColStr = dCol.toLaTeXString(colOptions);
 
-      const dStr = d
-        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
-        .join(', ');
-
       return [
         ' Then, with the data byte count ',
         inlineMath(`n = ${n}`),
@@ -261,7 +267,7 @@ class ReconstructDataDemo extends preact.Component /* :: <ReconstructDataDemoPro
           `${MInvStr} \\cdot ${bytesToUseColStr} = ${dColStr}\\text{,}`
         ),
         'and thus the output data bytes are ',
-        inlineMath(`d = [ ${dStr} ]\\text{.}`),
+        dComponent,
       ];
     });
 

@@ -120,6 +120,7 @@ const parsePositiveInt = (
 /* ::
 type ComputeParityDemoProps = {
   name: string,
+  detailed: boolean,
   header?: HTMLElement,
   containerClass?: string,
   inputClass?: string,
@@ -186,6 +187,15 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
 
       const p = computeParity(d, m);
 
+      const pStr = p
+        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
+        .join(', ');
+      const pComponent = inlineMath(`p = [ ${pStr} ]\\text{.}`);
+
+      if (!props.detailed) {
+        return [' Then the output parity bytes are ', pComponent];
+      }
+
       const P = computeParityMatrix(n, m);
 
       const PStr = P.toLaTeXString({ elementToLaTeXString: byteLaTeX });
@@ -206,10 +216,6 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
       const dColStr = dCol.toLaTeXString(colOptions);
       const pColStr = pCol.toLaTeXString(colOptions);
 
-      const pStr = p
-        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
-        .join(', ');
-
       return [
         ' Then, with the input byte count ',
         inlineMath(`n = ${n}`),
@@ -224,7 +230,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
         ' Therefore, the parity bytes are computed as',
         displayMath(`${PStr} \\cdot ${dColStr} = ${pColStr}\\text{,}`),
         ' and thus the output parity bytes are ',
-        inlineMath(`p = [ ${pStr} ]\\text{.}`),
+        pComponent,
       ];
     });
 

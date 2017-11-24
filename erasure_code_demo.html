@@ -50,6 +50,45 @@
         <var>m</var> = 2
       </span>
 
+      be the desired parity byte count. Then the output parity bytes
+      are
+
+      <span style="white-space: nowrap;">
+        <var>p</var> = [ <span style="color: red;">52</span>, <span style="color: red;">0c</span> ].
+      </span>
+    </div>
+
+    <div id="computeParityDemo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('computeParityDemo');
+      render(h(ComputeParityDemo, {
+        initialD: 'da, db, 0d', initialM: '2',
+        name: 'computeParityDemo',
+        detailed: false,
+        header: h('h3', null, 'Interactive Example 1: ', h('code', null, 'ComputeParity')),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
+
+    <div>
+      <h3>Example 2: <code>ComputeParity</code> in detail</h3>
+      Let
+
+      <span style="white-space: nowrap;">
+        <var>d</var> = [ da, db, 0d ]
+      </span>
+
+      be the input data bytes and let
+
+      <span style="white-space: nowrap;">
+        <var>m</var> = 2
+      </span>
+
       be the desired parity byte count. Then, with the input byte
       count
 
@@ -91,24 +130,63 @@
 
     </div>
 
-    <div id="computeParityDemo">
+    <div id="computeParityDetailDemo">
     </div>
     <script>
     'use strict';
     (function() {
       const { h, render } = window.preact;
-      const root = document.getElementById('computeParityDemo');
+      const root = document.getElementById('computeParityDetailDemo');
       render(h(ComputeParityDemo, {
         initialD: 'da, db, 0d', initialM: '2',
         name: 'computeParityDemo',
-        header: h('h3', null, 'Interactive Example 1: ', h('code', null, 'ComputeParity')),
+        detailed: true,
+        header: h('h3', null, 'Interactive Example 2: ', h('code', null, 'ComputeParity'), ' in detail'),
         resultColor: 'red',
       }), root.parent, root);
     })();
     </script>
 
     <div>
-      <h3>Example 2: <code>ReconstructData</code></h3>
+      <h3>Example 3: <code>ReconstructData</code></h3>
+      Let
+
+      <span style="white-space: nowrap;">
+        <var>d</var><sub>partial</sub> = [ ??, db, ?? ]
+      </span>
+
+      be the input partial data bytes and
+
+      <span style="white-space: nowrap;">
+        <var>p</var><sub>partial</sub> = [ 52, 0c ]
+      </span>
+
+      be the input partial parity bytes. Then the output data bytes are
+
+      <span style="white-space: nowrap;">
+        <var>d</var> = [ <span style="color: red;">da</span>, <span style="color: red;">db</span>, <span style="color: red;">0d</span> ].
+      </span>
+    </div>
+
+    <div id="reconstructDataDemo">
+    </div>
+    <script>
+    'use strict';
+    (function() {
+      const { h, render } = window.preact;
+      const root = document.getElementById('reconstructDataDemo');
+      render(h(ReconstructDataDemo, {
+        initialPartialD: '??, db, ??', initialPartialP: '52, 0c',
+        name: 'reconstructDataDemo',
+        detailed: false,
+        header: h('h3', null, 'Interactive Example 3: ', h('code', null, 'ReconstructData')),
+        resultColor: 'red',
+      }), root.parent, root);
+    })();
+    </script>
+
+    <div>
+      <h3>Example 4: <code>ReconstructData</code> in detail</h3>
       Let
 
       <span style="white-space: nowrap;">
@@ -183,17 +261,18 @@
       </span>
     </div>
 
-    <div id="reconstructDataDemo">
+    <div id="reconstructDataDetailDemo">
     </div>
     <script>
     'use strict';
     (function() {
       const { h, render } = window.preact;
-      const root = document.getElementById('reconstructDataDemo');
+      const root = document.getElementById('reconstructDataDetailDemo');
       render(h(ReconstructDataDemo, {
         initialPartialD: '??, db, ??', initialPartialP: '52, 0c',
         name: 'reconstructDataDemo',
-        header: h('h3', null, 'Interactive Example 2: ', h('code', null, 'ReconstructData')),
+        detailed: true,
+        header: h('h3', null, 'Interactive Example 4: ', h('code', null, 'ReconstructData'), ' in detail'),
         resultColor: 'red',
       }), root.parent, root);
     })();
