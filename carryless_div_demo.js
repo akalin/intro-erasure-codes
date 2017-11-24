@@ -9,7 +9,7 @@ import { carrylessDivBig } from './carryless';
 import {
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   subOpStr,
@@ -27,7 +27,7 @@ global
 
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   impossible,
   subOpStr,
   binaryOpInput,
@@ -159,8 +159,8 @@ class DivDemo extends preact.Component /* :: <DivDemoProps, DivDemoState> */ {
     const { h } = preact;
 
     const children = handleVChildError(() => {
-      const a = parseNonNegativeInt('a', state.a);
-      const b = parseNonNegativeInt('b', state.b);
+      const a = parseNonNegativeIntCapped('a', state.a);
+      const b = parseNonNegativeIntCapped('b', state.b);
 
       let quotient;
       let remainder;

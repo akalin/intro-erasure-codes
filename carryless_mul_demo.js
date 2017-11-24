@@ -9,7 +9,7 @@ import { carrylessMulBig } from './carryless';
 import {
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   addOpStr,
@@ -27,7 +27,7 @@ global
 
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   impossible,
   addOpStr,
   mulOpStr,
@@ -183,8 +183,8 @@ class MulDemo extends preact.Component /* :: <MulDemoProps, MulDemoState> */ {
     const { h } = preact;
 
     const children = handleVChildError(() => {
-      const a = parseNonNegativeInt('a', state.a);
-      const b = parseNonNegativeInt('b', state.b);
+      const a = parseNonNegativeIntCapped('a', state.a);
+      const b = parseNonNegativeIntCapped('b', state.b);
 
       let product;
       let op;

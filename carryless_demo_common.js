@@ -65,7 +65,6 @@ const strictParseInt = (
   return new BigInteger(s, 10);
 };
 
-// eslint-disable-next-line no-unused-vars
 const parseNonNegativeInt = (
   name /* : string */,
   s /* : string */
@@ -73,6 +72,21 @@ const parseNonNegativeInt = (
   const n = strictParseInt(name, s);
   if (n.signum() < 0) {
     throw new VChildError([inlineMath(name), ' cannot be negative.']);
+  }
+
+  return n;
+};
+
+const digitBound = 50;
+
+// eslint-disable-next-line no-unused-vars
+const parseNonNegativeIntCapped = (
+  name /* : string */,
+  s /* : string */
+) /* : BigInteger */ => {
+  const n = parseNonNegativeInt(name, s);
+  if (n.toString(10).length > digitBound) {
+    throw new VChildError([inlineMath(name), ' is too big.']);
   }
 
   return n;
@@ -133,7 +147,7 @@ const textInput = (
     type: 'text',
     value,
     size: 12,
-    pattern: '[0-9]+',
+    pattern: `0*[0-9]{1,${digitBound}}`,
     onInput: (e /* : Event */) => {
       if (!(e.target instanceof HTMLInputElement)) {
         throw new Error('e.target unexpectedly not an HTMLInputElement');
@@ -201,7 +215,7 @@ export {
   padStart,
   VChildError,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   impossible,
   addOpStr,
   subOpStr,

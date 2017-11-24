@@ -9,7 +9,7 @@ import { carrylessAddBig } from './carryless';
 import {
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   type ArithmeticType,
   impossible,
   addOpStr,
@@ -26,7 +26,7 @@ global
 
   padStart,
   handleVChildError,
-  parseNonNegativeInt,
+  parseNonNegativeIntCapped,
   impossible,
   addOpStr,
   binaryOpInput,
@@ -140,8 +140,8 @@ class AddDemo extends preact.Component /* :: <AddDemoProps, AddDemoState> */ {
     const { h } = preact;
 
     const children = handleVChildError(() => {
-      const a = parseNonNegativeInt('a', state.a);
-      const b = parseNonNegativeInt('b', state.b);
+      const a = parseNonNegativeIntCapped('a', state.a);
+      const b = parseNonNegativeIntCapped('b', state.b);
 
       let sum;
       let op;
