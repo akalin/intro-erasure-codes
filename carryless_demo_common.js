@@ -5,10 +5,25 @@
 'use strict';
 
 /* ::
-import { strictParseInt, VChildError, styleNoWrap } from './demo_common';
+import {
+  impossible,
+  strictParseInt,
+  VChildError,
+  styleNoWrap,
+} from './demo_common';
 import { inlineMath } from './math';
 */
-/* global preact, strictParseInt, VChildError, styleNoWrap, inlineMath */
+/*
+global
+  preact,
+
+  impossible,
+  strictParseInt,
+  VChildError,
+  styleNoWrap,
+
+  inlineMath,
+*/
 
 // eslint-disable-next-line no-unused-vars
 const padStart = (
@@ -62,11 +77,6 @@ const parseNonNegativeIntCapped = (
 /* ::
 type ArithmeticType = 'standard' | 'carry-less';
 */
-
-// flowlint-next-line unclear-type:off
-const impossible = (value /* : empty */) /* : any */ => {
-  throw new Error(`Impossible case encountered: ${value}`);
-};
 
 // eslint-disable-next-line no-unused-vars
 const addOpStr = (arithmeticType /* : ArithmeticType */) /* : string */ => {

@@ -39,6 +39,11 @@ const handleVChildError = (fn /* : () => VChild[] */) /* : VChild[] */ => {
   }
 };
 
+// eslint-disable-next-line no-unused-vars, prettier/prettier
+const impossible = (value /* : empty */) /* : any */ => { // flowlint-line unclear-type:off
+  throw new Error(`Impossible case encountered: ${value}`);
+};
+
 // eslint-disable-next-line no-unused-vars
 const strictParseInt = (
   name /* : string */,
@@ -156,6 +161,7 @@ const binaryOpInput = (
 /* :: export {
   VChildError,
   handleVChildError,
+  impossible,
   strictParseInt,
   parseField256Element,
   parseField257Element,
