@@ -11,9 +11,18 @@ import {
   carrylessAdd32,
   carrylessAddBig,
   carrylessMul32,
+  carrylessMulBig,
 } from './carryless';
 */
-/* global carrylessAdd32, carrylessAddBig, carrylessMul32, BigInteger */
+/*
+global
+  BigInteger,
+
+  carrylessAdd32,
+  carrylessAddBig,
+  carrylessMul32,
+  carrylessMulBig,
+*/
 
 describe('carryless', () => {
   it('add32', () => {
@@ -68,5 +77,36 @@ describe('carryless', () => {
     expect(carrylessMul32(1, 1 << 31)).toBe(0x80000000);
     expect(carrylessMul32(1 << 31, 2)).toBe(0);
     expect(carrylessMul32(2, 1 << 31)).toBe(0);
+  });
+
+  const carrylessMulBigStr = (
+    a /* : number | string */,
+    b /* : number | string */,
+    base /* : number */ = 10
+  ) /* : string */ =>
+    carrylessMulBig(toBigInt(a, base), toBigInt(b, base)).toString(base);
+
+  it('mulBig', () => {
+    expect(carrylessMulBigStr(7, 0)).toEqual('0');
+    expect(carrylessMulBigStr(7, 1)).toEqual('7');
+    expect(carrylessMulBigStr(7, 2)).toEqual('14');
+    expect(carrylessMulBigStr(7, 3)).toEqual('9');
+    expect(carrylessMulBigStr(7, 4)).toEqual('28');
+    expect(carrylessMulBigStr(7, 5)).toEqual('27');
+
+    expect(carrylessMulBigStr(0, 7)).toEqual('0');
+    expect(carrylessMulBigStr(1, 7)).toEqual('7');
+    expect(carrylessMulBigStr(2, 7)).toEqual('14');
+    expect(carrylessMulBigStr(3, 7)).toEqual('9');
+    expect(carrylessMulBigStr(4, 7)).toEqual('28');
+    expect(carrylessMulBigStr(5, 7)).toEqual('27');
+
+    expect(carrylessMulBigStr(0x80000000, 1, 16)).toEqual('80000000');
+    expect(carrylessMulBigStr(1, 0x80000000, 16)).toEqual('80000000');
+    expect(carrylessMulBigStr(0x80000000, 2, 16)).toEqual('100000000');
+    expect(carrylessMulBigStr(2, 0x80000000, 16)).toEqual('100000000');
+    expect(carrylessMulBigStr(0x80000000, 0x80000000, 16)).toEqual(
+      '4000000000000000'
+    );
   });
 });

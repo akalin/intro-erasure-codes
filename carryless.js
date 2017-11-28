@@ -4,6 +4,8 @@
 
 'use strict';
 
+/* global BigInteger */
+
 // eslint-disable-next-line no-unused-vars
 const carrylessAdd32 = (a /* : number */, b /* : number */) /* : number */ =>
   ((a >>> 0) ^ (b >>> 0)) >>> 0;
@@ -25,4 +27,20 @@ const carrylessMul32 = (a /* : number */, b /* : number */) /* : number */ => {
   return product >>> 0;
 };
 
-/* :: export { carrylessAdd32, carrylessAddBig, carrylessMul32 }; */
+// eslint-disable-next-line no-unused-vars
+const carrylessMulBig = (
+  a /* : BigInteger */,
+  b /* : BigInteger */
+) /* : BigInteger */ => {
+  let product = BigInteger.ZERO;
+  for (let i = 0; i < b.bitLength(); i += 1) {
+    if (b.testBit(i)) {
+      product = product.xor(a.shiftLeft(i));
+    }
+  }
+  return product;
+};
+
+/* ::
+export { carrylessAdd32, carrylessAddBig, carrylessMul32, carrylessMulBig };
+*/
