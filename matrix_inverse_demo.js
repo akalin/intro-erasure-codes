@@ -240,6 +240,26 @@ const colorsEqual = (a /* : RowReduceColors */, b /* : RowReduceColors */) => {
   return true;
 };
 
+// Like displayMath(`${aStrPrev} \\rightarrow ${aStr}`), but allows
+// for wrapping.
+const displayOp = (aStrPrev, aStr) =>
+  preact.h(
+    'div',
+    {
+      style: {
+        alignItems: 'center',
+        display: 'flex',
+        flexFlow: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        margin: '1em 0em',
+      },
+    },
+    inlineMath(`\\displaystyle ${aStrPrev}`),
+    inlineMath('\\; \\displaystyle \\rightarrow \\;'),
+    inlineMath(`\\displaystyle ${aStr}\\text{.}`)
+  );
+
 // eslint-disable-next-line no-unused-vars
 class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceComponentState> */ {
   constructor(props /* : RowReduceProps */) {
@@ -369,7 +389,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
         } else {
           children = children.concat(
             getDetails(rowBStr, aLeftPrev, aLeft, ':'),
-            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
+            displayOp(aStrPrev, aStr)
           );
         }
         break;
@@ -443,7 +463,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
         } else {
           children = children.concat(
             getDetails(divisorStr, aLeftPrev, aLeft, ':'),
-            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
+            displayOp(aStrPrev, aStr)
           );
         }
         break;
@@ -511,9 +531,7 @@ class RowReduce extends preact.Component /* :: <RowReduceProps, RowReduceCompone
         if (tooBig) {
           children.push(' (Matrices too big to display.)');
         } else {
-          children.push(
-            displayMath(`${aStrPrev} \\rightarrow ${aStr}\\text{.}`)
-          );
+          children.push(displayOp(aStrPrev, aStr));
         }
         break;
       }
