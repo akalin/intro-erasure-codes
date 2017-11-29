@@ -16,7 +16,11 @@ import {
   spanNoWrap,
   matrixStringLengthBound,
 } from './demo_common';
-import { parseHex, byteLaTeX } from './erasure_code_demo_common';
+import {
+  parseHex,
+  byteLaTeX,
+  byteArrayComponent,
+} from './erasure_code_demo_common';
 import { Field256Element } from './field_256';
 import { Matrix, type LaTeXStringOptions } from './matrix';
 import { computeParityMatrix, computeParity } from './cauchy_erasure_code';
@@ -39,6 +43,7 @@ global
 
   parseHex,
   byteLaTeX,
+  byteArrayComponent,
 
   Field256Element,
 
@@ -187,13 +192,10 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
 
       const p = computeParity(d, m);
 
-      const pStr = p
-        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
-        .join(', ');
-      const pComponent = inlineMath(`p = [ ${pStr} ]\\text{.}`);
+      const pComponents = byteArrayComponent(p, 'p', props.resultColor, '.');
 
       if (!props.detailed) {
-        return [' Then the output parity bytes are ', pComponent];
+        return [' Then the output parity bytes are ', pComponents];
       }
 
       const P = computeParityMatrix(n, m);
@@ -230,7 +232,7 @@ class ComputeParityDemo extends preact.Component /* :: <ComputeParityDemoProps, 
         ' Therefore, the parity bytes are computed as',
         displayMath(`${PStr} \\cdot ${dColStr} = ${pColStr}\\text{,}`),
         ' and thus the output parity bytes are ',
-        pComponent,
+        pComponents,
       ];
     });
 

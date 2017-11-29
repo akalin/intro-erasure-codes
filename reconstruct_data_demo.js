@@ -13,7 +13,11 @@ import {
   textInput,
   spanNoWrap,
 } from './demo_common';
-import { parseHex, byteLaTeX } from './erasure_code_demo_common';
+import {
+  parseHex,
+  byteLaTeX,
+  byteArrayComponent,
+} from './erasure_code_demo_common';
 import { Field256Element } from './field_256';
 import { Matrix, type LaTeXStringOptions } from './matrix';
 import {
@@ -38,6 +42,7 @@ global
 
   parseHex,
   byteLaTeX,
+  byteArrayComponent,
 
   Field256Element,
 
@@ -200,13 +205,10 @@ class ReconstructDataDemo extends preact.Component /* :: <ReconstructDataDemoPro
 
       const { bytesToUse, M, d } = info;
 
-      const dStr = d
-        .map(x => `{\\color{${props.resultColor}}${byteLaTeX(x)}}`)
-        .join(', ');
-      const dComponent = inlineMath(`d = [ ${dStr} ]\\text{.}`);
+      const dComponents = byteArrayComponent(d, 'd', props.resultColor, '.');
 
       if (!props.detailed) {
-        return [' Then the output data bytes are ', dComponent];
+        return [' Then the output data bytes are ', dComponents];
       }
 
       const P = computeParityMatrix(n, m);
@@ -267,7 +269,7 @@ class ReconstructDataDemo extends preact.Component /* :: <ReconstructDataDemoPro
           `${MInvStr} \\cdot ${bytesToUseColStr} = ${dColStr}\\text{,}`
         ),
         'and thus the output data bytes are ',
-        dComponent,
+        dComponents,
       ];
     });
 
