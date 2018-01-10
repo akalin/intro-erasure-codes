@@ -6,8 +6,8 @@
 
 'use strict';
 
-/* :: import { carrylessAdd } from './carryless'; */
-/* global preact, carrylessAdd */
+/* :: import { carrylessAddBig } from './carryless'; */
+/* global preact, carrylessAddBig, BigInteger */
 
 const padStart = (
   s /* : string */,
@@ -30,9 +30,9 @@ const padStart = (
 type ArithmeticType = 'standard' | 'carry-less';
 
 type AddDetailProps = {
-  a: number,
-  b: number,
-  sum: number,
+  a: BigInteger,
+  b: BigInteger,
+  sum: BigInteger,
   arithmeticType: ArithmeticType,
 };
 */
@@ -105,32 +105,24 @@ class VChildError extends Error {
 const strictParseInt = (
   name /* : string */,
   s /* : string */
-) /* : number */ => {
+) /* : BigInteger */ => {
   if (!/^[+-]?[0-9]+$/.test(s)) {
     const nameVar = preact.h('var', null, name);
     throw new VChildError([nameVar, ' is not a valid number.']);
   }
 
-  const n = parseInt(s, 10);
-  if (Number.isNaN(n)) {
-    throw new Error('Unexpected NaN');
-  }
-
-  return n;
+  return new BigInteger(s, 10);
 };
 
-const parseInt31 = (name /* : string */, s /* : string */) /* : number */ => {
+const parseNonNegativeInt = (
+  name /* : string */,
+  s /* : string */
+) /* : BigInteger */ => {
   const n = strictParseInt(name, s);
 
-  const nameVar = preact.h('var', null, name);
-
-  if (n < 0) {
+  if (n.signum() < 0) {
+    const nameVar = preact.h('var', null, name);
     throw new VChildError([nameVar, ' cannot be negative.']);
-  }
-
-  const maxInt31 = ~0 >>> 1;
-  if (n > maxInt31) {
-    throw new VChildError([nameVar, ' is too big.']);
   }
 
   return n;
@@ -195,8 +187,8 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
 
     let children;
     try {
-      const a = parseInt31('a', state.a);
-      const b = parseInt31('b', state.b);
+      const a = parseNonNegativeInt('a', state.a);
+      const b = parseNonNegativeInt('b', state.b);
 
       const choiceGroupName = 'carrylessAddDemoArithmeticTypeChoice';
       const choiceRadio = (
@@ -219,11 +211,11 @@ class AddDemo extends preact.Component /* :: <{}, AddDemoState> */ {
       let op;
       switch (state.arithmeticType) {
         case 'standard':
-          sum = (a + b) >>> 0;
+          sum = a.add(b);
           op = '+';
           break;
         case 'carry-less':
-          sum = carrylessAdd(a, b);
+          sum = carrylessAddBig(a, b);
           op = '⊕';
           break;
         default:
