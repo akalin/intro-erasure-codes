@@ -8,15 +8,8 @@
 import { type Field } from './field';
 import { Matrix } from './matrix';
 */
-/* global Matrix */
 
 /* ::
-
-type RowReduceInitialState<T: Field<*>> = {
-  type: 'initial',
-  aLeft: Matrix<T>,
-  aRight: Matrix<T>,
-};
 
 type RowReduceSwapState<T: Field<*>> = {
   type: 'swap',
