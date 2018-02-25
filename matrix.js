@@ -5,17 +5,6 @@
 /* :: import { type Field } from './field'; */
 
 // eslint-disable-next-line no-unused-vars
-class SingularMatrixError extends Error {
-  // flowlint-next-line unclear-type:off
-  constructor(...params /* : any[] */) {
-    super('Singular matrix', ...params);
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, SingularMatrixError);
-    }
-  }
-}
-
-// eslint-disable-next-line no-unused-vars
 class Matrix /* :: <T: Field<*>> */ {
   /* ::
   _rows: number;
@@ -162,46 +151,6 @@ ${elementStr}
     }
   }
 
-  _rowReduceForInverse(n /* : Matrix<T> */) {
-    const zero = this.zeroElement();
-    for (let i = 0; i < this._rows; i += 1) {
-      let pivot = zero;
-      for (let j = i; j < this._rows; j += 1) {
-        if (!this.at(j, i).equals(zero)) {
-          this._swapRows(i, j);
-          n._swapRows(i, j);
-          pivot = this.at(i, i);
-          break;
-        }
-      }
-
-      if (pivot.equals(zero)) {
-        throw new SingularMatrixError();
-      }
-
-      this._divideRow(i, pivot);
-      n._divideRow(i, pivot);
-
-      for (let j = i + 1; j < this._rows; j += 1) {
-        const t = this.at(j, i);
-        if (!t.equals(zero)) {
-          this._subtractScaledRow(j, i, t);
-          n._subtractScaledRow(j, i, t);
-        }
-      }
-    }
-
-    for (let i = 0; i < this._rows; i += 1) {
-      for (let j = 0; j < i; j += 1) {
-        const t = this.at(j, i);
-        if (!t.equals(zero)) {
-          this._subtractScaledRow(j, i, t);
-          n._subtractScaledRow(j, i, t);
-        }
-      }
-    }
-  }
-
   _clone() /* : Matrix<T> */ {
     return new Matrix(this._rows, this._columns, this._elements);
   }
@@ -248,15 +197,6 @@ ${elementStr}
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-const newCauchyMatrix = /* :: <T: Field<*>> */ (
-  x /* : T[] */,
-  y /* : T[] */
-) /* : Matrix<T> */ =>
-  new Matrix(x.length, y.length, (i, j) =>
-    x[i].one().dividedBy(x[i].minus(y[j]))
-  );
-
 /* ::
-export { SingularMatrixError, Matrix, newCauchyMatrix };
+export { Matrix };
 */
