@@ -62,7 +62,6 @@ type RowReduceInverseFoundState<T: Field<*>> = {
 };
 
 type RowReduceState<T: Field<*>> =
-  | RowReduceInitialState<T>
   | RowReduceSwapState<T>
   | RowReduceSingularState<T>
   | RowReduceDivideState<T>
