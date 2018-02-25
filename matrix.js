@@ -134,23 +134,6 @@ ${elementStr}
     }
   }
 
-  _divideRow(i /* : number */, c /* : T */) {
-    for (let k = 0; k < this._columns; k += 1) {
-      const a = i * this._columns + k;
-      this._elements[a] = this._elements[a].dividedBy(c);
-    }
-  }
-
-  _subtractScaledRow(dest /* : number */, src /* : number */, c /* : T */) {
-    for (let k = 0; k < this._columns; k += 1) {
-      const aDest = dest * this._columns + k;
-      const aSrc = src * this._columns + k;
-      this._elements[aDest] = this._elements[aDest].minus(
-        this._elements[aSrc].times(c)
-      );
-    }
-  }
-
   _clone() /* : Matrix<T> */ {
     return new Matrix(this._rows, this._columns, this._elements);
   }
@@ -159,41 +142,6 @@ ${elementStr}
     const ret = this._clone();
     ret._swapRows(i, j);
     return ret;
-  }
-
-  divideRow(i /* : number */, c /* : T */) /* : Matrix<T> */ {
-    const ret = this._clone();
-    ret._divideRow(i, c);
-    return ret;
-  }
-
-  subtractScaledRow(
-    dest /* : number */,
-    src /* : number */,
-    c /* : T */
-  ) /* : Matrix<T> */ {
-    const ret = this._clone();
-    ret._subtractScaledRow(dest, src, c);
-    return ret;
-  }
-
-  inverse() /* : Matrix<T> */ {
-    if (this._rows !== this._columns) {
-      throw new Error('Cannot invert non-square matrix');
-    }
-
-    const zero = this.zeroElement();
-    const one = this.oneElement();
-
-    const mInv = new Matrix(
-      this._rows,
-      this._rows,
-      (i, j) => (i === j ? one : zero)
-    );
-
-    const clone = this._clone();
-    clone._rowReduceForInverse(mInv);
-    return mInv;
   }
 }
 
