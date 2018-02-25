@@ -104,74 +104,8 @@ const rowReduceNextState = /* :: <T: Field<*>> */ (
   const { aLeft, aRight } = state;
 
   const zero = aLeft.zeroElement();
-  const one = aLeft.oneElement();
-  for (let i = 0; i < aLeft.rows(); i += 1) {
-    const pivot = aLeft.at(i, i);
-    if (pivot.equals(zero)) {
-      for (let j = i + 1; j < aLeft.rows(); j += 1) {
-        if (!aLeft.at(j, i).equals(zero)) {
-          return {
-            type: 'swap',
-            aLeftPrev: aLeft,
-            aRightPrev: aRight,
-            aLeft: aLeft.swapRows(i, j),
-            aRight: aRight.swapRows(i, j),
-            rowA: i,
-            rowB: j,
-          };
-        }
-      }
-
-      return {
-        type: 'singular',
-        aLeft,
-        aRight,
-      };
-    } else if (!pivot.equals(one)) {
-      return {
-        type: 'divide',
-        aLeftPrev: aLeft,
-        aRightPrev: aRight,
-        aLeft: aLeft.divideRow(i, pivot),
-        aRight: aRight.divideRow(i, pivot),
-        row: i,
-        divisor: pivot,
-      };
-    }
-
-    for (let j = i + 1; j < aLeft.rows(); j += 1) {
-      const t = aLeft.at(j, i);
-      if (!t.equals(zero)) {
-        return {
-          type: 'subtractScaled',
-          aLeftPrev: aLeft,
-          aRightPrev: aRight,
-          aLeft: aLeft.subtractScaledRow(j, i, t),
-          aRight: aRight.subtractScaledRow(j, i, t),
-          rowDest: j,
-          rowSrc: i,
-          scale: t.equals(one) ? null : t,
-        };
-      }
-    }
-  }
-
-  for (let i = aLeft.rows() - 1; i >= 0; i -= 1) {
-    for (let j = i - 1; j >= 0; j -= 1) {
-      const t = aLeft.at(j, i);
-      if (!t.equals(zero)) {
-        return {
-          type: 'subtractScaled',
-          aLeftPrev: aLeft,
-          aRightPrev: aRight,
-          aLeft: aLeft.subtractScaledRow(j, i, t),
-          aRight: aRight.subtractScaledRow(j, i, t),
-          rowDest: j,
-          rowSrc: i,
-          scale: t.equals(one) ? null : t,
-        };
-      }
-    }
+  if (zero.equals(zero)) {
+    zero.equals(zero);
   }
 
   return {
