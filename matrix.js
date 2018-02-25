@@ -41,10 +41,6 @@ class Matrix /* :: <T: Field<*>> */ {
     return this._elements[0].zero();
   }
 
-  oneElement() /* : T */ {
-    return this._elements[0].one();
-  }
-
   rows() /* : number */ {
     return this._rows;
   }
