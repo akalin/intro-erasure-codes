@@ -65,19 +65,13 @@ type RowReduceState<T: Field<*>> =
 // eslint-disable-next-line no-unused-vars
 const rowReduceNextState = /* :: <T: Field<*>> */ (
   state /* : RowReduceState<T> */
-) /* : RowReduceState<T> */ => {
-  const { aLeft, aRight } = state;
+) => {
+  const { aLeft } = state;
 
   const zero = aLeft.zeroElement();
   if (zero.equals(zero)) {
     zero.equals(zero);
   }
-
-  return {
-    type: 'inverseFound',
-    aLeft,
-    aRight,
-  };
 };
 
 /* ::
